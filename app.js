@@ -1,6 +1,6 @@
 const express = require('express');
 const logger = require('morgan');
-const walletRouter = require('./routes/wallet');
+const leaderRouter = require('./routes/leader');
 
 const app = express();
 
@@ -8,7 +8,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/wallet/', walletRouter);
+app.use('/leader/', leaderRouter);
 
 // noinspection JSUnusedLocalSymbols
 app.use(function (err, req, res, next) {
