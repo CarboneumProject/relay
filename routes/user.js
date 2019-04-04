@@ -1,6 +1,6 @@
 const express = require('express');
 const validateSignature = require('../models/validate-signature');
-const leaderModel = require('../models/leader');
+const leaderModel = require('../models/user');
 const router = express.Router();
 
 router.post('/register', async (req, res, next) => {

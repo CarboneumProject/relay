@@ -5,7 +5,7 @@ const config = require('./config');
 const network = config.getNetwork();
 client.select(network.redisDB);
 
-const Leader = require('./models/leader');
+const Leader = require('./models/user');
 const erc20 = require('./models/erc20');
 const push = require('./models/push');
 const HDWalletProvider = require('truffle-hdwallet-provider');

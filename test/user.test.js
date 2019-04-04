@@ -4,7 +4,7 @@ const app = require('../app');
 
 test('valid signature', async function (done) {
   const { body } = await request(app)
-    .post('/leader/register')
+    .post('/user/register')
     .send({
       'address': '0x919CBF1468B535e517e2dc75ADc224Cbca9e6e2f',
       'signature': '0x1669f466991ec08133c91a8b472a5674b78cec0a316d69a085362eea4f34da956d7168b9430d91050fb4ed4035c45805806d4932d222a3debe07bf08ce7acab31c',// eslint-disable-line
@@ -24,7 +24,7 @@ test('valid signature', async function (done) {
 
 test('error invalid signature', async function (done) {
   const { body } = await request(app)
-    .post('/leader/register')
+    .post('/user/register')
     .send({
       'address': '0x919CBF1468B535e517e2dc75ADc224Cbca9e6e2f',
       'signature': '0x629b4988efad3ba12474cbc61245b2ba16faa76181773a4e8ea30549c8c89a2b2ed5b2d5bfd6d4a2fc9e90eccd05bbcb615268239b7a0feb4a62cd97b8b813651b',// eslint-disable-line

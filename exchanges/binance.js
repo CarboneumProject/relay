@@ -37,4 +37,17 @@ exchange.listAllSymbol = async function listAllSymbol () {
   return symbols;
 };
 
+exchange.newOrder = async function newOrder (order) {
+  let binance = require('node-binance-api')();
+  let exchangeInfo = promisify(binance.exchangeInfo);
+  let data = await exchangeInfo();
+  let symbols = [];
+  for (let obj of data.symbols) {
+    if (obj.status === 'TRADING') {
+      symbols.push(obj.symbol);
+    }
+  }
+  return symbols;
+};
+
 module.exports = exchange;
