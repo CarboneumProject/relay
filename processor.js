@@ -15,7 +15,7 @@ const providerWithMnemonic = (mnemonic, rpcEndpoint) =>
   new HDWalletProvider(mnemonic, rpcEndpoint);
 const infuraProvider = network => providerWithMnemonic(
   process.env.MNEMONIC || config.mnemonic,
-  process.env.RPC_URL || `https://${network.name}.infura.io/${process.env.INFURA_API_KEY}`,
+  process.env.RPC_URL || `https://${network.name}.infura.io/v3/${process.env.INFURA_API_KEY}`,
 );
 
 const BENCHMARK_ALLOWANCE_C8 = new BigNumber(10 ** 18).mul(10000);
@@ -26,7 +26,6 @@ for (let i = 0; i < exchanges.length; i++) {
 }
 
 const onTrade = async function (exchange, leader, trade) {
-  console.log(leader, trade);
   let txHash = exchange.id + trade.id;
   let order = await Order.find(txHash);
   if (order !== undefined) {
@@ -65,16 +64,15 @@ const onTrade = async function (exchange, leader, trade) {
           provider.engine.stop();
           if ((new BigNumber(c8Balance)).gt(0)) {
             if ((new BigNumber(allowance)).gt(BENCHMARK_ALLOWANCE_C8)) {
-              let user = User.find(follower, exchange.name);
-              if (user) {
+              let user = await User.find(follower, exchange.name);
+              if (user !== null) {
                 try {
-                  let order = await exchange.newOrder(trade);
-                  console.log(order);
+                  let order = await exchange.newOrder(user.apiKey, user.apiSecret, trade);
                   let copyOrder = {
                     leader: leader,
                     follower: follower,
                     leaderTxHash: txHash,
-                    orderHash: exchange.id + order.id,
+                    orderHash: exchange.id + order.orderId,
                   };
                   await Order.insertNewOrder(copyOrder);
                   let msg = '\nFollowing your leader, your order is placing.';

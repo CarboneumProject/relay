@@ -48,13 +48,11 @@ exchange.newOrder = async function newOrder (apiKey, apiSecret, order) {
   });
   let buy = promisify(binance.buy);
   let sell = promisify(binance.sell);
-  let data = '';
   if (order.side === 'BUY') {
-    data = await buy(order.symbol, order.quantity, order.price);
+    return buy(order.symbol, order.quantity, order.price, {});
   } else {
-    data = await sell(order.symbol, order.quantity, order.price);
+    return sell(order.symbol, order.quantity, order.price, {});
   }
-  return data;
 };
 
 module.exports = exchange;
