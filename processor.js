@@ -5,9 +5,11 @@ const config = require('./config');
 const network = config.getNetwork();
 client.select(network.redisDB);
 
+const Order = require('./models/order');
 const User = require('./models/user');
 const erc20 = require('./models/erc20');
 const push = require('./models/push');
+const socialTrading = require('./models/socialTradingContract');
 const HDWalletProvider = require('truffle-hdwallet-provider');
 const providerWithMnemonic = (mnemonic, rpcEndpoint) =>
   new HDWalletProvider(mnemonic, rpcEndpoint);
@@ -23,39 +25,88 @@ for (let i = 0; i < exchanges.length; i++) {
   tradeExchange.push(require(`./exchanges/${exchanges[i]}`));
 }
 
-const onTrade = async function (leader, trade) {
+const onTrade = async function (exchange, leader, trade) {
   console.log(leader, trade);
-  client.hgetall('leader:' + leader, async function (err, followDict) {
-    if (err) {
-      return;
+  let txHash = exchange.id + trade.id;
+  let order = await Order.find(txHash);
+  if (order !== undefined) {
+    // Trade from this relay.
+    if (trade.side === 'BUY') {
+      // TODO Save our trade
+    } else {
+      // TODO deduct amount of asset when
     }
-    if (followDict !== null) {
-      await Object.keys(followDict).forEach(async function (follower) {
-        let provider = infuraProvider(process.env.NETWORK || network.name);
-        let allowance = await erc20.allowance(
-          provider,
-          network.carboneum,
-          follower,
-          network.socialtrading,
-        );
-        let c8Balance = await erc20.balance(provider, network.carboneum, follower);
-        provider.engine.stop();
-        if ((new BigNumber(c8Balance)).gt(0)) {
-          if ((new BigNumber(allowance)).gt(BENCHMARK_ALLOWANCE_C8)) {
-            // TODO process trade order.
+
+    // Distribute reward and fee.
+    // TODO change to profit share model.
+    socialTrading.distributeRewardOne(
+      order.leader,
+      order.follower,
+      network.REWARD,
+      network.FEE,
+      [order.leader_tx_hash, '0x', order.tx_hash, '0x'],
+    );
+  } else {
+    // Trade from real user.
+    client.hgetall('leader:' + leader, async function (err, followDict) {
+      if (err) {
+        return;
+      }
+      if (followDict !== null) {
+        await Object.keys(followDict).forEach(async function (follower) {
+          let provider = infuraProvider(process.env.NETWORK || network.name);
+          let allowance = await erc20.allowance(
+            provider,
+            network.carboneum,
+            follower,
+            network.socialtrading,
+          );
+          let c8Balance = await erc20.balance(provider, network.carboneum, follower);
+          provider.engine.stop();
+          if ((new BigNumber(c8Balance)).gt(0)) {
+            if ((new BigNumber(allowance)).gt(BENCHMARK_ALLOWANCE_C8)) {
+              let user = User.find(follower, exchange.name);
+              if (user) {
+                try {
+                  let order = await exchange.newOrder(trade);
+                  console.log(order);
+                  let copyOrder = {
+                    leader: leader,
+                    follower: follower,
+                    leaderTxHash: txHash,
+                    orderHash: exchange.id + order.id,
+                  };
+                  await Order.insertNewOrder(copyOrder);
+                  let msg = '\nFollowing your leader, your order is placing.';
+                  let title = 'Leader Transaction';
+                  push.sendMsgToUser(follower, title, msg);
+                } catch (e) {
+                  let asset = trade.symbol.substring(0, 3);
+                  let base = trade.symbol.substring(3, 6);
+                  if (trade.side === 'BUY') {
+                    asset = base;
+                  }
+                  let title = 'Leader Transaction';
+                  let msg = `\nYour balance of ${asset} in your ${exchange.name.toUpperCase()} account is not enough.`;
+                  push.sendMsgToUser(follower, title, msg);
+                }
+              } else {
+                // Notify user to register API KEY.
+              }
+            } else {
+              // Inform user to Adjust allowance
+              let msg = 'Please adjust allowance of C8 for be able to transfer a token.';
+              push.sendAdjustC8Allowance(follower, msg);
+            }
           } else {
-            // Inform user to Adjust allowance
-            let msg = 'Please adjust allowance of C8 for be able to transfer a token.';
-            push.sendAdjustC8Allowance(follower, msg);
+            let msg = 'To start Copytrading, please deposit C8 to your Ethereum Wallet.';
+            let title = 'Insufficient C8 token';
+            push.sendMsgToUser(follower, title, msg);
           }
-        } else {
-          let msg = 'To start Copytrading, please deposit C8 to your Ethereum Wallet.';
-          let title = 'Insufficient C8 token';
-          push.sendMsgToUser(follower, title, msg);
-        }
-      });
-    }
-  });
+        });
+      }
+    });
+  }
 };
 
 async function run () {
