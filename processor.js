@@ -5,7 +5,7 @@ const config = require('./config');
 const network = config.getNetwork();
 client.select(network.redisDB);
 
-const Leader = require('./models/user');
+const User = require('./models/user');
 const erc20 = require('./models/erc20');
 const push = require('./models/push');
 const HDWalletProvider = require('truffle-hdwallet-provider');
@@ -60,9 +60,9 @@ const onTrade = async function (leader, trade) {
 
 async function run () {
   for (let ex of tradeExchange) {
-    let leaders = await Leader.findAllInExchange(ex.name);
-    for (let leader of leaders) {
-      ex.subscribe(leader.apiKey, leader.apiSecret, leader.address, onTrade);
+    let users = await User.findAllInExchange(ex.name);
+    for (let user of users) {
+      ex.subscribe(user.apiKey, user.apiSecret, user.address, onTrade);
     }
   }
 }
