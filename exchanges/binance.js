@@ -1,11 +1,12 @@
 const { promisify } = require('es6-promisify');
-
+const Binance = require('node-binance-api');
 const exchange = {};
 exchange.id = '0xb17a7ce00000000';
 exchange.name = 'binance';
 
 exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callback) {
-  const binance = require('node-binance-api')().options({
+  let binance = new Binance();
+  binance.options({
     APIKEY: apiKey,
     APISECRET: apiSecret,
     useServerTime: true,
@@ -26,7 +27,7 @@ exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callb
 };
 
 exchange.listAllSymbol = async function listAllSymbol () {
-  const binance = require('node-binance-api')();
+  let binance = new Binance();
   let exchangeInfo = promisify(binance.exchangeInfo);
   let data = await exchangeInfo();
   let symbols = [];
@@ -39,7 +40,8 @@ exchange.listAllSymbol = async function listAllSymbol () {
 };
 
 exchange.newOrder = async function newOrder (apiKey, apiSecret, order) {
-  const binance = require('node-binance-api')().options({
+  let binance = new Binance();
+  binance.options({
     APIKEY: apiKey,
     APISECRET: apiSecret,
     useServerTime: true,
