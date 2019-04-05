@@ -1,15 +1,15 @@
 const mysql = require('./mysql');
 const user = {};
 
-user.register = async function register (address, exchange, apiKey, apiSecret) {
+user.register = async function register (address, exchange, apiKey, apiSecret, userType) {
   return mysql.query(`
     REPLACE INTO carboneum.user (address,
                                  exchange,
                                  apiKey,
-                                 apiSecret)
-    VALUES (?, ?, ?, ?)
-  `, [address, exchange, apiKey, apiSecret,
-  ]);
+                                 apiSecret,
+                                 type)
+    VALUES (?, ?, ?, ?, ?)
+  `, [address, exchange, apiKey, apiSecret, userType]);
 };
 
 user.find = async function find (address, exchange) {

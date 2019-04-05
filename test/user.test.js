@@ -11,6 +11,7 @@ test('valid signature', async function (done) {
       'exchange': 'binance',
       'apiKey': 'qBSKuq5gXRdsY6LTdR1YwUuyHg4V2EpFDsJDK9jMU3c4dLYFFMieW0uA7r3Wp2231',
       'apiSecret': 'kVfVwQyCpWE79vRmfnCGeDwfFINNKRO2epMMywhsMZVSlJIksc83IVw4rGIu231',
+      'type': 'leader',
     })
     .set('Accept', 'application/json')
     .expect(200);
@@ -31,6 +32,7 @@ test('error invalid signature', async function (done) {
       'exchange': 'binance',
       'apiKey': 'qBSKuq5gXRdsY6LTdR1YwUuyHg4V2EpFDsJDK9jMU3c4dLYFFMieW0uA7r3Wp2231',
       'apiSecret': 'kVfVwQyCpWE79vRmfnCGeDwfFINNKRO2epMMywhsMZVSlJIksc83IVw4rGIu231',
+      'type': 'leader',
     })
     .set('Accept', 'application/json')
     .expect(400);

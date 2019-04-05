@@ -11,7 +11,7 @@ router.post('/register', async (req, res, next) => {
       res.status(400);
       return res.send({ 'status': 'no', 'message': 'Invalid signature.' });
     }
-    leaderModel.register(body.address, body.exchange, body.apiKey, body.apiSecret);
+    leaderModel.register(body.address, body.exchange, body.apiKey, body.apiSecret, body.type);
     return res.send({ 'status': 'ok' });
   } catch (e) {
     console.error(e);
