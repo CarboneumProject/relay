@@ -63,19 +63,19 @@ create table if not exists trade
     leader_tx_hash varchar(66)  null
 );
 
-create index if not exists trade_amount_left_index
+create index trade_amount_left_index
     on trade (amount_left);
 
-create index if not exists trade_leader_follower_amount_left_index
+create index trade_leader_follower_amount_left_index
     on trade (leader, follower, amount_left);
 
-create index if not exists trade_order_hash_index
+create index trade_order_hash_index
     on trade (order_hash);
 
-create index if not exists trade_order_time_index
+create index trade_order_time_index
     on trade (order_time);
 
-create index if not exists trade_tx_hash_index
+create index trade_tx_hash_index
     on trade (tx_hash);
 
 create table if not exists trade_log
