@@ -7,13 +7,15 @@ order.insertNewOrder = async function insertNewOrder (order) {
         leader,
         follower,
         leader_tx_hash,
-        order_hash
+        order_hash,
+        order_time
     )
-    VALUES (?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?)
   `, [order.leader,
     order.follower,
     order.leaderTxHash,
     order.orderHash,
+    order.orderTime,
   ]);
 };
 

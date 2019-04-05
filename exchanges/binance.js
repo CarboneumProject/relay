@@ -13,7 +13,7 @@ exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callb
   });
   binance.websockets.userData((account) => {
   }, (report) => {
-    if (report.x === 'NEW') {
+    if (report.x === 'NEW') { // TODO Change this to 'TRADE' status.
       let trade = {
         id: report.i,
         symbol: report.s,
