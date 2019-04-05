@@ -1,7 +1,7 @@
 const { promisify } = require('es6-promisify');
 const Binance = require('node-binance-api');
 const exchange = {};
-exchange.id = '0xb17a7ce00000000';
+exchange.id = '0xb17a7ce00000000000000';
 exchange.name = 'binance';
 
 exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callback) {
@@ -13,7 +13,7 @@ exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callb
   });
   binance.websockets.userData((account) => {
   }, (report) => {
-    if (report.x === 'NEW') { // TODO Change this to 'TRADE' status.
+    if (report.x === 'TRADE') {
       let trade = {
         id: report.i,
         symbol: report.s,
