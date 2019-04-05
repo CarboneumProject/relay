@@ -12,12 +12,6 @@ const push = require('./models/push');
 const utils = require('./models/utils');
 const socialTrading = require('./models/socialTradingContract');
 
-const exchanges = ['binance'];
-const tradeExchange = [];
-for (let i = 0; i < exchanges.length; i++) {
-  tradeExchange.push(require(`./exchanges/${exchanges[i]}`));
-}
-
 const onTrade = async function (exchange, leader, trade) {
   let txHash = utils.tradeTx(exchange.id, trade.id);
   let order = await Order.find(txHash);
@@ -94,13 +88,25 @@ const onTrade = async function (exchange, leader, trade) {
   }
 };
 
-async function run () {
+const exchanges = ['binance'];
+const tradeExchange = [];
+for (let i = 0; i < exchanges.length; i++) {
+  tradeExchange.push(require(`./exchanges/${exchanges[i]}`));
+}
+const subscribedUsers = {};
+const subscriptionDelay = 30000; // Delay each 30 seconds for subscribe new users.
+async function subscribe () {
   for (let ex of tradeExchange) {
     let users = await User.findAllInExchange(ex.name);
     for (let user of users) {
-      ex.subscribe(user.apiKey, user.apiSecret, user.address, onTrade);
+      let userKey = ex.name + ':' + user.address;
+      if (!(userKey in subscribedUsers)) {
+        ex.subscribe(user.apiKey, user.apiSecret, user.address, onTrade);
+        subscribedUsers[userKey] = true;
+      }
     }
   }
+  setTimeout(subscribe, subscriptionDelay);
 }
 
-run();
+subscribe();
