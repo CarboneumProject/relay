@@ -99,7 +99,7 @@ async function subscribe () {
   for (let ex of tradeExchange) {
     let users = await User.findAllInExchange(ex.name);
     for (let user of users) {
-      let userKey = ex.name + ':' + user.address;
+      let userKey = `${user.exchange}:${user.address}:${user.apiKey}`;
       if (!(userKey in subscribedUsers)) {
         ex.subscribe(user.apiKey, user.apiSecret, user.address, onTrade);
         subscribedUsers[userKey] = true;
