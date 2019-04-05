@@ -40,6 +40,7 @@ const onTrade = async function (exchange, leader, trade) {
     let base = trade.symbol.substring(3, 6);
     if (trade.side === 'BUY') {
       asset = base;
+      base = trade.symbol.substring(0, 3);
     }
     let baseAmount = utils.decimalFormat(8, trade.quantity * trade.price * Math.pow(10, 8));
     let msg = `Order: ${trade.side} ${trade.quantity} ${asset} for ${baseAmount} ${base} ${ext}`;
@@ -58,6 +59,7 @@ const onTrade = async function (exchange, leader, trade) {
             let base = trade.symbol.substring(3, 6);
             if (trade.side === 'BUY') {
               asset = base;
+              base = trade.symbol.substring(0, 3);
             }
             let baseAmount = utils.decimalFormat(8, trade.quantity * trade.price * Math.pow(10, 8));
             let msg = `Order: ${trade.side} ${trade.quantity} ${asset} by ${baseAmount} ${base}`;
