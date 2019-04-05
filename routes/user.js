@@ -12,10 +12,11 @@ router.post('/register', async (req, res, next) => {
       return res.send({ 'status': 'no', 'message': 'Invalid signature.' });
     }
     User.register(user.address.toLowerCase(), user.exchange, user.apiKey, user.apiSecret, user.type);
+    const re = res.send({ 'status': 'ok' });
     if (user.type === 'follower') {
       await User.checkAvailableC8(user.address);
     }
-    return res.send({ 'status': 'ok' });
+    return re;
   } catch (e) {
     console.error(e);
     res.status(500);
