@@ -38,10 +38,6 @@ const onTrade = async function (exchange, leader, trade) {
     }
     let asset = trade.symbol.substring(0, 3);
     let base = trade.symbol.substring(3, 6);
-    if (trade.side === 'BUY') {
-      asset = base;
-      base = trade.symbol.substring(0, 3);
-    }
     let baseAmount = utils.decimalFormat(8, trade.quantity * trade.price * Math.pow(10, 8));
     let msg = `Order: ${trade.side} ${trade.quantity} ${asset} for ${baseAmount} ${base} ${ext}`;
     push.sendTradeNotification(asset, base, trade.quantity, baseAmount, order.leader, order.follower, msg);
@@ -57,10 +53,6 @@ const onTrade = async function (exchange, leader, trade) {
           if (user !== null) {
             let asset = trade.symbol.substring(0, 3);
             let base = trade.symbol.substring(3, 6);
-            if (trade.side === 'BUY') {
-              asset = base;
-              base = trade.symbol.substring(0, 3);
-            }
             let baseAmount = utils.decimalFormat(8, trade.quantity * trade.price * Math.pow(10, 8));
             let msg = `Order: ${trade.side} ${trade.quantity} ${asset} by ${baseAmount} ${base}`;
             let title = 'Leader Transaction';
