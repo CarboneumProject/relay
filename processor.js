@@ -51,25 +51,23 @@ const onTrade = async function (exchange, leader, trade) {
             if (trade.side === 'BUY') {
               asset = base;
             }
+            let baseAmount = utils.decimalFormat(8, trade.quantity * trade.price * Math.pow(10, 8));
+            let msg = `Order: ${trade.side} ${trade.quantity} ${asset} by ${baseAmount} ${base}`;
+            let title = 'Leader Transaction';
             try {
               let order = await exchange.newOrder(user.apiKey, user.apiSecret, trade);
-              console.dir(order);
               let copyOrder = {
                 leader: leader,
                 follower: follower,
                 leaderTxHash: txHash,
                 orderHash: exchange.id + order.orderId,
-                orderTime: order.transactTime,
+                orderTime: new Date(order.transactTime),
               };
-              let orderValue = utils.decimalFormat(0, order.quantity * order.price);
               await Order.insertNewOrder(copyOrder);
-              let msg = `Order: ${order.side} ${order.quantity} ${asset} by ${orderValue} ${base}`;
               msg += '\nFollowing your leader, your order is placing.';
-              let title = 'Leader Transaction';
               push.sendMsgToUser(follower, title, msg);
             } catch (e) {
-              let title = 'Leader Transaction';
-              let msg = `\nYour balance of ${asset} in your ${exchange.name.toUpperCase()} account is not enough.`;
+              msg += `\nYour balance of ${asset} in your ${exchange.name.toUpperCase()} account is not enough.`;
               push.sendMsgToUser(follower, title, msg);
             }
           } else {
