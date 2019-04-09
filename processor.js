@@ -10,6 +10,7 @@ const Order = require('./models/order');
 const User = require('./models/user');
 const push = require('./models/push');
 const utils = require('./models/utils');
+const crypt = require('./models/crypt');
 const socialTrading = require('./models/socialTradingContract');
 
 const onTrade = async function (exchange, leader, trade) {
@@ -95,7 +96,7 @@ async function subscribe () {
     for (let user of users) {
       let userKey = `${user.exchange}:${user.address}:${user.apiKey}`;
       if (!(userKey in subscribedUsers)) {
-        ex.subscribe(user.apiKey, user.apiSecret, user.address, onTrade);
+        ex.subscribe(crypt.decrypt(user.apiKey), crypt.decrypt(user.apiSecret), user.address, onTrade);
         subscribedUsers[userKey] = true;
       }
     }

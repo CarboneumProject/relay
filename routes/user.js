@@ -1,5 +1,6 @@
 const express = require('express');
 const validateSignature = require('../models/validate-signature');
+const crypt = require('../models/crypt');
 const User = require('../models/user');
 const router = express.Router();
 
@@ -11,7 +12,13 @@ router.post('/register', async (req, res, next) => {
       res.status(400);
       return res.send({ 'status': 'no', 'message': 'Invalid signature.' });
     }
-    User.register(user.address.toLowerCase(), user.exchange, user.apiKey, user.apiSecret, user.type);
+    await User.register(
+      user.address.toLowerCase(),
+      user.exchange,
+      crypt.encrypt(user.apiKey),
+      crypt.encrypt(user.apiSecret),
+      user.type,
+    );
     const re = res.send({ 'status': 'ok' });
     if (user.type === 'follower') {
       await User.checkAvailableC8(user.address);

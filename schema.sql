@@ -97,8 +97,8 @@ create table if not exists user
 (
     address      varchar(42)                           not null,
     exchange     varchar(64)                           not null,
-    apiKey       varchar(256)                          null,
-    apiSecret    varchar(256)                          null,
+    apiKey       varchar(500)                          null,
+    apiSecret    varchar(500)                          null,
     registerDate datetime    default CURRENT_TIMESTAMP null,
     type         varchar(10) default 'follower'        null,
     primary key (address, exchange)

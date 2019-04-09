@@ -6,8 +6,8 @@ test('valid signature', async function (done) {
   const { body } = await request(app)
     .post('/user/register')
     .send({
-      'address': '0x919CBF1468B535e517e2dc75ADc224Cbca9e6e2f',
-      'signature': '0x1669f466991ec08133c91a8b472a5674b78cec0a316d69a085362eea4f34da956d7168b9430d91050fb4ed4035c45805806d4932d222a3debe07bf08ce7acab31c',// eslint-disable-line
+      'address': '0x6E227565f2eF1Fc7B7eC333f42A33462C7838337',
+      'signature': '0xe067655557ecea476a1265724709c0d654d619d4933eb1087e0990244f19f09061302784bb7dfd4a44b396aebc9a906cad36a8a7af901631f92f7f4b5814ab7e1c',// eslint-disable-line
       'exchange': 'binance',
       'apiKey': 'qBSKuq5gXRdsY6LTdR1YwUuyHg4V2EpFDsJDK9jMU3c4dLYFFMieW0uA7r3Wp2231',
       'apiSecret': 'kVfVwQyCpWE79vRmfnCGeDwfFINNKRO2epMMywhsMZVSlJIksc83IVw4rGIu231',
