@@ -4,7 +4,7 @@ const config = require('./config');
 const network = config.getNetwork();
 
 const web3 = new Web3(
-  new Web3.providers.WebsocketProvider(network.ws_url),
+  new Web3.providers.WebsocketProvider(network.wsUrl),
 );
 
 const c8Contract = new web3.eth.Contract(
@@ -15,7 +15,7 @@ const c8Contract = new web3.eth.Contract(
 c8Contract.events.Follow({}, (error, event) => {
   const redis = require('redis');
   const client = redis.createClient();
-  client.select(network.redis_db);
+  client.select(network.redisDB);
   if (error) return console.error(error);
 
   if (event.event === 'Follow' && event.removed === false) {
