@@ -22,7 +22,7 @@ c8Contract.getPastEvents({
   }
   const redis = require('redis');
   const client = redis.createClient();
-  client.select(network.redis_db);
+  client.select(network.redisDb);
 
   for (let i = 0; i < eventResult.length; i++) {
     let event = eventResult[i];
