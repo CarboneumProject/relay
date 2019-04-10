@@ -4,7 +4,7 @@ const config = require('./config');
 const network = config.getNetwork();
 
 const web3 = new Web3(
-  new Web3.providers.WebsocketProvider(network.ws_url),
+  new Web3.providers.WebsocketProvider(network.wsUrl),
 );
 
 const c8Contract = new web3.eth.Contract(
