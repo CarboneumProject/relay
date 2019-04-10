@@ -58,7 +58,7 @@ const onTrade = async function (exchange, leader, trade) {
             let msg = `Order: ${trade.side} ${trade.quantity} ${asset} by ${baseAmount} ${base}`;
             let title = 'Leader Transaction';
             try {
-              let order = await exchange.newOrder(user.apiKey, user.apiSecret, trade);
+              let order = await exchange.newOrder(crypt.decrypt(user.apiKey), crypt.decrypt(user.apiSecret), trade);
               let orderHash = utils.tradeTx(exchange.id, order.orderId);
               let copyOrder = {
                 leader: leader,
