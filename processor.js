@@ -15,14 +15,35 @@ const Trade = require('./models/trade');
 const socialTrading = require('./models/socialTradingContract');
 
 const onTrade = async function (exchange, leader, trade) {
+  console.dir(trade);
   let txHash = utils.tradeTx(exchange.id, trade.id);
   let order = await Order.find(txHash);
   if (order !== undefined) {
     // Trade from this relay.
     if (trade.side === 'BUY') {
       // Get cost of trade by USD
-
+      let exchangeInfo = await exchange.listAllSymbol();
+      let asset = exchangeInfo[trade.symbol].baseAsset;
+      let base = exchangeInfo[trade.symbol].quoteAsset;
+      let assetPrice = await exchange.getPriceInUSD(asset);
+      let costBase = trade.price * trade.quantity;
+      let costUsd = assetPrice * trade.quantity;
+      let tradeComplete = {
+        orderTime: order.order_time,
+        leader: order.leader,
+        follower: order.follower,
+        makerToken: asset,
+        takerToken: base,
+        amountMaker: trade.quantity,
+        amountTaker: costBase,
+        amountLeft: trade.quantity,
+        orderHash: order.order_hash,
+        txHash: order.order_hash,
+        leaderTxhash: order.leader_tx_hash,
+        cost: costUsd,
+      };
       // Save trade to DB
+      await Trade.insertNewTrade(tradeComplete);
     } else {
       // Reduce amount of purchased token from our trade in database.
 
@@ -40,8 +61,9 @@ const onTrade = async function (exchange, leader, trade) {
         await Object.keys(followDict).forEach(async function (follower) {
           let user = await User.find(follower, exchange.name);
           if (user !== null) {
-            let asset = trade.symbol.substring(0, 3);
-            let base = trade.symbol.substring(3, 6);
+            let exchangeInfo = await exchange.listAllSymbol();
+            let asset = exchangeInfo[trade.symbol].baseAsset;
+            let base = exchangeInfo[trade.symbol].quoteAsset;
             let baseAmount = utils.decimalFormat(8, trade.quantity * trade.price * Math.pow(10, 8));
             let msg = `Order: ${trade.side} ${trade.quantity} ${asset} by ${baseAmount} ${base}`;
             let title = 'Leader Transaction';

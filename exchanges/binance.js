@@ -3,6 +3,7 @@ const Binance = require('node-binance-api');
 const exchange = {};
 exchange.id = '0xb17a7ce00000000000000';
 exchange.name = 'binance';
+exchange.info = undefined;
 
 exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callback) {
   let binance = new Binance();
@@ -28,16 +29,21 @@ exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callb
 };
 
 exchange.listAllSymbol = async function listAllSymbol () {
-  let binance = new Binance();
-  let exchangeInfo = promisify(binance.exchangeInfo);
-  let data = await exchangeInfo();
-  let symbols = [];
-  for (let obj of data.symbols) {
-    if (obj.status === 'TRADING') {
-      symbols.push(obj.symbol);
+  if (exchange.info === undefined) {
+    let binance = new Binance();
+    let exchangeInfo = promisify(binance.exchangeInfo);
+    let data = await exchangeInfo();
+    let symbols = {};
+    for (let obj of data.symbols) {
+      if (obj.status === 'TRADING') {
+        symbols[obj.symbol] = obj;
+      }
     }
+    exchange.info = symbols;
+    return symbols;
+  } else {
+    return exchange.info;
   }
-  return symbols;
 };
 
 exchange.newOrder = async function newOrder (apiKey, apiSecret, order) {
