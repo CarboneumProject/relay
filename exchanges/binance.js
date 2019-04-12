@@ -51,4 +51,36 @@ exchange.newOrder = async function newOrder (apiKey, apiSecret, order) {
   return orderPromise(order.side, order.symbol, order.quantity, order.price, {});
 };
 
+exchange.getPriceInUSD = async function newOrder (asset) {
+  let binance = new Binance();
+  let prices = promisify(binance.prices);
+  let usds = [
+    'USDT',
+    'PAX',
+    'TUSD',
+    'USDC',
+    'USDS',
+  ];
+
+  // USD base at same price.
+  if (usds.includes(asset)) {
+    return 1.0;
+  }
+
+  // Use USDT base first if available.
+  try {
+    let usdPair = `${asset}${usds[0]}`;
+    let price = await prices(usdPair);
+    return price[usdPair];
+  } catch (e) {
+    // console.log(e.body);
+  }
+
+  // Converse from BTC pair.
+  let priceBTCUSCT = await prices('BTCUSDT');
+  let priceASSETBTC = await prices(`${asset}BTC`);
+  let price = priceBTCUSCT.BTCUSDT * priceASSETBTC[`${asset}BTC`];
+  return price;
+};
+
 module.exports = exchange;
