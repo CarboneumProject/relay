@@ -5,7 +5,7 @@ const PROFIT_PERCENTAGE = network.PROFIT_PERCENTAGE;
 
 const feeProcessor = {};
 feeProcessor.percentageFee = async function (openTrades, copyOrder, closeTrade, c8LastPrice) {
-  let subAmountLeft = new BigNumber(closeTrade.amount_taker);// sell token, buy ether back
+  let subAmountLeft = new BigNumber(closeTrade.amountTaker);// sell token, buy ether back
   let tokenSellLastPrice = closeTrade.tokenSellLastPrice;
   let sumC8FEE = new BigNumber(0);
   let processedFees = [];
@@ -16,9 +16,9 @@ feeProcessor.percentageFee = async function (openTrades, copyOrder, closeTrade, 
   if (openedPosition > 0) {
     for (let i = 0; i < openedPosition && subAmountLeft.gt(0); i++) {
       let openOrder = openTrades[i];
-      let lastAmount = new BigNumber(openOrder.amount_left);
+      let lastAmount = new BigNumber(openOrder.amountLeft);
       subAmountLeft = subAmountLeft.sub(lastAmount);
-      let avg = new BigNumber(openOrder.amount_taker).div(openOrder.amount_maker);
+      let avg = new BigNumber(openOrder.amountTaker).div(openOrder.amountMaker);
 
       let profit = new BigNumber(0);
       if (subAmountLeft.gte(0)) {
@@ -40,9 +40,9 @@ feeProcessor.percentageFee = async function (openTrades, copyOrder, closeTrade, 
           'follower': copyOrder.follower,
           'reward': reward,
           'relayFee': fee,
-          'orderHashes': [openOrder.leader_tx_hash,
-            copyOrder.leader_tx_hash,
-            openOrder.tx_hash,
+          'orderHashes': [openOrder.leaderTxHash,
+            copyOrder.leaderTxHash,
+            openOrder.txHash,
             closeTrade.txHash],
           'orderID': openOrder.id,
         });
@@ -53,9 +53,9 @@ feeProcessor.percentageFee = async function (openTrades, copyOrder, closeTrade, 
           'follower': copyOrder.follower,
           'reward': 0,
           'relayFee': 0,
-          'orderHashes': [openOrder.leader_tx_hash,
-            copyOrder.leader_tx_hash,
-            openOrder.tx_hash,
+          'orderHashes': [openOrder.leaderTxHash,
+            copyOrder.leaderTxHash,
+            openOrder.txHash,
             closeTrade.txHash],
           'orderID': openOrder.id,
         });
@@ -73,7 +73,7 @@ feeProcessor.percentageFee = async function (openTrades, copyOrder, closeTrade, 
       'reward': network.REWARD,
       'relayFee': network.FEE,
       'orderHashes': ['0x',
-        copyOrder.leader_tx_hash,
+        copyOrder.leaderTxHash,
         '0x',
         closeTrade.txHash],
     });
@@ -89,7 +89,7 @@ feeProcessor.withdrawToken = async function (openTrades, withdrawAmount) {
   if (openedPosition > 0) {
     for (let i = 0; i < openedPosition && subAmountLeft.gt(0); i++) {
       let openOrder = openTrades[i];
-      let lastAmount = new BigNumber(openOrder.amount_left);
+      let lastAmount = new BigNumber(openOrder.amountLeft);
       subAmountLeft = subAmountLeft.sub(lastAmount);
 
       if (subAmountLeft.gte(0)) {

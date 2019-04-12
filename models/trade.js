@@ -3,7 +3,19 @@ const trade = {};
 
 trade.getAvailableTrade = async function getAvailableTrade (token, owner) {
   return mysql.query(`
-    SELECT *
+    SELECT id,
+        order_time AS orderTime,
+        leader,
+        follower,
+        maker_token AS makerToken,
+        taker_token AS takerToken,
+        amount_maker AS takerToken,
+        amount_taker AS amountTaker,
+        amount_left AS amountLeft,
+        order_hash AS orderHash,
+        tx_hash AS txHash,
+        leader_tx_hash AS leaderTxHash,
+        cost
     FROM carboneum.trade
     WHERE  maker_token = ? AND follower = ? AND amount_left != '0'
     ORDER BY order_time ASC

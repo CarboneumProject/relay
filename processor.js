@@ -12,6 +12,7 @@ const push = require('./models/push');
 const utils = require('./models/utils');
 const crypt = require('./models/crypt');
 const Trade = require('./models/trade');
+const feeProcessor = require('./models/feeProcessor');
 const socialTrading = require('./models/socialTradingContract');
 
 const onTrade = async function (exchange, leader, trade) {
@@ -20,36 +21,39 @@ const onTrade = async function (exchange, leader, trade) {
   let order = await Order.find(txHash);
   if (order !== undefined) {
     // Trade from this relay.
+    let exchangeInfo = await exchange.listAllSymbol();
+    let asset = exchangeInfo[trade.symbol].baseAsset;
+    let base = exchangeInfo[trade.symbol].quoteAsset;
+    let assetPrice = await exchange.getPriceInUSD(asset);
+    let costBase = trade.price * trade.quantity;
+    let costUsd = assetPrice * trade.quantity;
+    let tradeComplete = {
+      orderTime: order.orderTime,
+      leader: order.leader,
+      follower: order.follower,
+      makerToken: asset,
+      takerToken: base,
+      amountMaker: trade.quantity,
+      amountTaker: costBase,
+      amountLeft: trade.quantity,
+      orderHash: order.orderHash,
+      txHash: order.orderHash,
+      leaderTxhash: order.leaderTxHash,
+      cost: costUsd,
+    };
     if (trade.side === 'BUY') {
-      // Get cost of trade by USD
-      let exchangeInfo = await exchange.listAllSymbol();
-      let asset = exchangeInfo[trade.symbol].baseAsset;
-      let base = exchangeInfo[trade.symbol].quoteAsset;
-      let assetPrice = await exchange.getPriceInUSD(asset);
-      let costBase = trade.price * trade.quantity;
-      let costUsd = assetPrice * trade.quantity;
-      let tradeComplete = {
-        orderTime: order.order_time,
-        leader: order.leader,
-        follower: order.follower,
-        makerToken: asset,
-        takerToken: base,
-        amountMaker: trade.quantity,
-        amountTaker: costBase,
-        amountLeft: trade.quantity,
-        orderHash: order.order_hash,
-        txHash: order.order_hash,
-        leaderTxhash: order.leader_tx_hash,
-        cost: costUsd,
-      };
-      // Save trade to DB
       await Trade.insertNewTrade(tradeComplete);
     } else {
-      // Reduce amount of purchased token from our trade in database.
+      let openTrades = await Trade.getAvailableTrade(asset, open.follower);
+      let c8LastPrice = await exchange.getC8LastPrice();
+      c8LastPrice = new BigNumber(c8LastPrice);
+      let returnObj = await feeProcessor.percentageFee(openTrades, order, tradeComplete, c8LastPrice);
 
-      // Calc profit of the trade.
-
-      // Distribute reward if needed.
+      // update db
+      let updateAmounts = returnObj.updateAmounts;
+      updateAmounts.forEach(async function (order) {
+        await Trade.updateAmountLeft(order.amountLeft, order.orderId);
+      });
     }
   } else {
     // Trade from real user.

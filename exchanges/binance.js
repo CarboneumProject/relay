@@ -1,5 +1,6 @@
 const { promisify } = require('es6-promisify');
 const Binance = require('node-binance-api');
+const rp = require('request-promise');
 const exchange = {};
 exchange.id = '0xb17a7ce00000000000000';
 exchange.name = 'binance';
@@ -87,6 +88,18 @@ exchange.getPriceInUSD = async function newOrder (asset) {
   let priceASSETBTC = await prices(`${asset}BTC`);
   let price = priceBTCUSCT.BTCUSDT * priceASSETBTC[`${asset}BTC`];
   return price;
+};
+
+exchange.getC8LastPrice = async function getC8LastPrice () {
+  const lastPrice = await {
+    method: 'POST',
+    url: 'https://api.idex.market/returnTicker',
+    json:
+      {
+        'market': 'ETH_C8',
+      },
+  };
+  return (await rp(lastPrice)).last * exchange.getPriceInUSD('ETH');
 };
 
 module.exports = exchange;
