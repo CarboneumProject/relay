@@ -11,6 +11,7 @@ const User = require('./models/user');
 const push = require('./models/push');
 const utils = require('./models/utils');
 const crypt = require('./models/crypt');
+const Trade = require('./models/trade');
 const socialTrading = require('./models/socialTradingContract');
 
 const onTrade = async function (exchange, leader, trade) {
@@ -18,30 +19,17 @@ const onTrade = async function (exchange, leader, trade) {
   let order = await Order.find(txHash);
   if (order !== undefined) {
     // Trade from this relay.
-    // Distribute reward and fee.
-    // TODO change to profit share model.
-    await socialTrading.distributeRewardOne(
-      order.leader,
-      order.follower,
-      network.REWARD,
-      network.FEE,
-      [order.leader_tx_hash, '0x', order.order_hash, '0x'],
-    );
-    let c8Decimals = 18;
-    let repeatDecimalC8 = '0'.repeat(c8Decimals - 4);
-    // push msg to user
-    let sumFee = new BigNumber(network.FEE).add(new BigNumber(network.REWARD));
-    let ext = '';
-    if (sumFee.gt(0)) {
-      sumFee = sumFee.div(10 ** c8Decimals);
-      let totalFee = numeral(sumFee).format(`0,0.0000[${repeatDecimalC8}]`);
-      ext = `\nFee ${totalFee} C8`;
+    if (trade.side === 'BUY') {
+      // Get cost of trade by USD
+
+      // Save trade to DB
+    } else {
+      // Reduce amount of purchased token from our trade in database.
+
+      // Calc profit of the trade.
+
+      // Distribute reward if needed.
     }
-    let asset = trade.symbol.substring(0, 3);
-    let base = trade.symbol.substring(3, 6);
-    let baseAmount = utils.decimalFormat(8, trade.quantity * trade.price * Math.pow(10, 8));
-    let msg = `Order: ${trade.side} ${trade.quantity} ${asset} for ${baseAmount} ${base} ${ext}`;
-    push.sendTradeNotification(asset, base, trade.quantity, baseAmount, order.leader, order.follower, msg);
   } else {
     // Trade from real user.
     client.hgetall('leader:' + leader, async function (err, followDict) {
