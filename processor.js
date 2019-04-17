@@ -46,7 +46,7 @@ const onTrade = async function (exchange, leader, trade) {
       await Trade.insertNewTrade(tradeComplete);
     } else {
       // Sell order process fee.
-      let openTrades = await Trade.getAvailableTrade(asset, open.follower);
+      let openTrades = await Trade.getAvailableTrade(asset, order.follower);
       let c8LastPrice = await exchange.getC8LastPrice();
       c8LastPrice = new BigNumber(c8LastPrice);
       let processed = await feeProcessor.percentageFee(openTrades, order, tradeComplete, c8LastPrice);
