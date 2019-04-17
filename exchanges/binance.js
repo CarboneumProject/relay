@@ -90,7 +90,7 @@ exchange.getPriceInUSD = async function newOrder (asset) {
   return price;
 };
 
-exchange.getC8LastPrice = async function getC8LastPrice () {
+exchange.getC8LastPrice = async function getC8LastPrice () { // TODO use exchange's C8 price when it listed.
   const lastPrice = await {
     method: 'POST',
     url: 'https://api.idex.market/returnTicker',

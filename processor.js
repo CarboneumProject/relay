@@ -42,18 +42,44 @@ const onTrade = async function (exchange, leader, trade) {
       cost: costUsd,
     };
     if (trade.side === 'BUY') {
+      // Save buy order to database and wait for sell order.
       await Trade.insertNewTrade(tradeComplete);
     } else {
+      // Sell order process fee.
       let openTrades = await Trade.getAvailableTrade(asset, open.follower);
       let c8LastPrice = await exchange.getC8LastPrice();
       c8LastPrice = new BigNumber(c8LastPrice);
-      let returnObj = await feeProcessor.percentageFee(openTrades, order, tradeComplete, c8LastPrice);
+      let processed = await feeProcessor.percentageFee(openTrades, order, tradeComplete, c8LastPrice);
 
       // update db
-      let updateAmounts = returnObj.updateAmounts;
+      let updateAmounts = processed.updateAmounts;
       updateAmounts.forEach(async function (order) {
         await Trade.updateAmountLeft(order.amountLeft, order.orderId);
       });
+
+      for (let i = 0; i < processed.processedFees.length; i++) {
+        let processedFee = processed.processedFees[i];
+        await socialTrading.distributeReward(
+          processedFee.leader,
+          processedFee.follower,
+          processedFee.reward,
+          processedFee.C8FEE,
+          processedFee.orderHashes,
+        );
+      }
+
+      let ext = '';
+      let c8Decimals = 18;
+      let repeatDecimalC8 = '0'.repeat(c8Decimals);
+      if (processed.sumFee > new BigNumber(0)) {
+        let totalFee = numeral(processed.sumFee).format(`0,0.[${repeatDecimalC8}]`);
+        ext = `\nReward + Fee ${totalFee} C8`;
+      }
+
+      let msg = `[-SELL] ${tradeComplete.amountMaker} ${tradeComplete.makerToken} `;
+      msg += `for ${tradeComplete.amountTaker} ${tradeComplete.takerToken} ${ext}`;
+      push.sendTradeNotification(tradeComplete.makerToken, tradeComplete.takerToken, tradeComplete.amountMaker,
+        tradeComplete.amountTaker, tradeComplete.leader, tradeComplete.follower, msg);
     }
   } else {
     // Trade from real user.
