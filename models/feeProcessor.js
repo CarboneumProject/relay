@@ -4,9 +4,9 @@ const network = config.getNetwork();
 const PROFIT_PERCENTAGE = network.PROFIT_PERCENTAGE;
 
 const feeProcessor = {};
-feeProcessor.percentageFee = async function (openTrades, copyOrder, closeTrade, c8LastPrice) {
-  let subAmountLeft = new BigNumber(closeTrade.amountTaker);// sell token, buy ether back
-  let tokenSellLastPrice = closeTrade.tokenSellLastPrice;
+feeProcessor.percentageFee = async function (openTrades, closeTrade, c8LastPrice) {
+  let subAmountLeft = new BigNumber(closeTrade.amountMaker);
+  let tokenSellLastPrice = new BigNumber(closeTrade.cost).div(closeTrade.amountMaker);
   let sumC8FEE = new BigNumber(0);
   let processedFees = [];
   let updateAmounts = [];
@@ -18,30 +18,30 @@ feeProcessor.percentageFee = async function (openTrades, copyOrder, closeTrade, 
       let openOrder = openTrades[i];
       let lastAmount = new BigNumber(openOrder.amountLeft);
       subAmountLeft = subAmountLeft.sub(lastAmount);
-      let avg = new BigNumber(openOrder.amountTaker).div(openOrder.amountMaker);
+      let openPrice = new BigNumber(openOrder.cost).div(openOrder.amountMaker);
 
       let profit = new BigNumber(0);
       if (subAmountLeft.gte(0)) {
         updateAmounts.push({ 'amountLeft': '0', 'orderId': openOrder.id });
-        profit = (tokenSellLastPrice.sub(avg)).mul(PROFIT_PERCENTAGE).mul(lastAmount);
+        profit = (tokenSellLastPrice.sub(openPrice)).mul(PROFIT_PERCENTAGE).mul(lastAmount);
       } else {
-        updateAmounts.push({ 'amountLeft': subAmountLeft.abs().toFixed(0), 'orderId': openOrder.id });
-        profit = (tokenSellLastPrice.sub(avg)).mul(PROFIT_PERCENTAGE).mul(lastAmount.add(subAmountLeft));
+        updateAmounts.push({ 'amountLeft': subAmountLeft.abs().toFixed(18), 'orderId': openOrder.id });
+        profit = (tokenSellLastPrice.sub(openPrice)).mul(PROFIT_PERCENTAGE).mul(lastAmount.add(subAmountLeft));
       }
-      if (avg.lt(tokenSellLastPrice)) {
-        let reward = profit.div(c8LastPrice).mul(network.LEADER_REWARD_PERCENT).toFixed(0);
-        let fee = profit.div(c8LastPrice).mul(network.SYSTEM_FEE_PERCENT).toFixed(0);
+      if (openPrice.lt(tokenSellLastPrice)) { // Has profit
+        let reward = profit.div(c8LastPrice).mul(network.LEADER_REWARD_PERCENT);
+        let fee = profit.div(c8LastPrice).mul(network.SYSTEM_FEE_PERCENT);
         let C8FEE = profit.div(c8LastPrice);
         sumC8FEE = sumC8FEE.add(C8FEE);
 
         processedFees.push({
           'C8FEE': C8FEE,
-          'leader': copyOrder.leader,
-          'follower': copyOrder.follower,
+          'leader': closeTrade.leader,
+          'follower': closeTrade.follower,
           'reward': reward,
           'relayFee': fee,
           'orderHashes': [openOrder.leaderTxHash,
-            copyOrder.leaderTxHash,
+            closeTrade.leaderTxHash,
             openOrder.txHash,
             closeTrade.txHash],
           'orderID': openOrder.id,
@@ -49,31 +49,34 @@ feeProcessor.percentageFee = async function (openTrades, copyOrder, closeTrade, 
       } else {
         processedFees.push({
           'C8FEE': new BigNumber(0),
-          'leader': copyOrder.leader,
-          'follower': copyOrder.follower,
+          'leader': closeTrade.leader,
+          'follower': closeTrade.follower,
           'reward': 0,
           'relayFee': 0,
-          'orderHashes': [openOrder.leaderTxHash,
-            copyOrder.leaderTxHash,
+          'orderHashes': [
+            openOrder.leaderTxHash,
+            closeTrade.leaderTxHash,
             openOrder.txHash,
-            closeTrade.txHash],
+            closeTrade.txHash,
+          ],
           'orderID': openOrder.id,
         });
       }
     }
   } else {
-    let reward = new BigNumber(network.REWARD);
-    let fee = new BigNumber(network.FEE);
+    const decimalC8 = 10 ** 18;
+    let reward = new BigNumber(network.REWARD).div(decimalC8);
+    let fee = new BigNumber(network.FEE).div(decimalC8);
     let C8FEE = reward.add(fee);
     sumC8FEE = sumC8FEE.add(C8FEE);
     processedFees.push({
       'C8FEE': C8FEE,
-      'leader': copyOrder.leader,
-      'follower': copyOrder.follower,
-      'reward': network.REWARD,
-      'relayFee': network.FEE,
+      'leader': closeTrade.leader,
+      'follower': closeTrade.follower,
+      'reward': new BigNumber(network.REWARD).div(decimalC8),
+      'relayFee': new BigNumber(network.FEE).div(decimalC8),
       'orderHashes': ['0x',
-        copyOrder.leaderTxHash,
+        closeTrade.leaderTxHash,
         '0x',
         closeTrade.txHash],
     });

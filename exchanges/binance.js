@@ -15,7 +15,7 @@ exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callb
   });
   binance.websockets.userData((account) => {
   }, (report) => {
-    if (report.x === 'TRADE') {
+    if (report.x === 'TRADE' && report.X === 'FILLED') { // Is trade event and all filled.
       let trade = {
         id: report.i,
         symbol: report.s,

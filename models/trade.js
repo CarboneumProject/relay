@@ -9,7 +9,7 @@ trade.getAvailableTrade = async function getAvailableTrade (token, owner) {
         follower,
         maker_token AS makerToken,
         taker_token AS takerToken,
-        amount_maker AS takerToken,
+        amount_maker AS amountMaker,
         amount_taker AS amountTaker,
         amount_left AS amountLeft,
         order_hash AS orderHash,

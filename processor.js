@@ -24,9 +24,10 @@ const onTrade = async function (exchange, leader, trade) {
     let exchangeInfo = await exchange.listAllSymbol();
     let asset = exchangeInfo[trade.symbol].baseAsset;
     let base = exchangeInfo[trade.symbol].quoteAsset;
+    let precision = exchangeInfo[trade.symbol].baseAssetPrecision;
     let assetPrice = await exchange.getPriceInUSD(asset);
-    let costBase = trade.price * trade.quantity;
-    let costUsd = assetPrice * trade.quantity;
+    let costBase = (trade.price * trade.quantity).toFixed(precision);
+    let costUsd = (assetPrice * trade.quantity).toFixed(precision);
     let tradeComplete = {
       orderTime: order.orderTime,
       leader: order.leader,
@@ -49,34 +50,27 @@ const onTrade = async function (exchange, leader, trade) {
       let openTrades = await Trade.getAvailableTrade(asset, order.follower);
       let c8LastPrice = await exchange.getC8LastPrice();
       c8LastPrice = new BigNumber(c8LastPrice);
-      let processed = await feeProcessor.percentageFee(openTrades, order, tradeComplete, c8LastPrice);
+      let rewardAndFees = await feeProcessor.percentageFee(openTrades, order, tradeComplete, c8LastPrice);
 
       // update db
-      let updateAmounts = processed.updateAmounts;
+      let updateAmounts = rewardAndFees.updateAmounts;
       updateAmounts.forEach(async function (order) {
         await Trade.updateAmountLeft(order.amountLeft, order.orderId);
       });
 
-      for (let i = 0; i < processed.processedFees.length; i++) {
-        let processedFee = processed.processedFees[i];
-        await socialTrading.distributeReward(
-          processedFee.leader,
-          processedFee.follower,
-          processedFee.reward,
-          processedFee.C8FEE,
-          processedFee.orderHashes,
-        );
-      }
+      // call social contract's distribute reward
+      let processedFees = rewardAndFees.processedFees;
+      await socialTrading.distributeRewardAll(processedFees);
 
       let ext = '';
       let c8Decimals = 18;
       let repeatDecimalC8 = '0'.repeat(c8Decimals);
-      if (processed.sumFee > new BigNumber(0)) {
-        let totalFee = numeral(processed.sumFee).format(`0,0.[${repeatDecimalC8}]`);
+      if (rewardAndFees.sumFee > new BigNumber(0)) {
+        let totalFee = numeral(rewardAndFees.sumFee).format(`0,0.[${repeatDecimalC8}]`);
         ext = `\nReward + Fee ${totalFee} C8`;
       }
 
-      let msg = `[-SELL] ${tradeComplete.amountMaker} ${tradeComplete.makerToken} `;
+      let msg = `Order: SELL ${tradeComplete.amountMaker} ${tradeComplete.makerToken} `;
       msg += `for ${tradeComplete.amountTaker} ${tradeComplete.takerToken} ${ext}`;
       push.sendTradeNotification(tradeComplete.makerToken, tradeComplete.takerToken, tradeComplete.amountMaker,
         tradeComplete.amountTaker, tradeComplete.leader, tradeComplete.follower, msg);
@@ -111,7 +105,6 @@ const onTrade = async function (exchange, leader, trade) {
               msg += '\nFollowing your leader, your order is placing.';
               push.sendMsgToUser(follower, title, msg);
             } catch (e) {
-              console.log(e.message());
               msg += `\nYour balance of ${asset} in your ${exchange.name.toUpperCase()} account is not enough.`;
               push.sendMsgToUser(follower, title, msg);
             }

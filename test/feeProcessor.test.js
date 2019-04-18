@@ -5,46 +5,45 @@ require('chai')
   .use(require('chai-bignumber')(BigNumber))
   .should();
 
-const c8LastPrice = new BigNumber(0.001);
+const c8LastPrice = new BigNumber(0.1); // 0.1 USD
 
 describe('feeProcessor', function () {
   it('should able to calculate fee for 1 order with same amount and price and no fee will paid', async function () {
     let openTrades = [
       {
         'id': 1,
-        'orderTime': '2019-03-05T06:59:18.000Z',
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+        'orderTime': '2019-04-17 17:51:50',
+        'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
         'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-        'makerToken': '0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d',
-        'takerToken': '0x0000000000000000000000000000000000000000',
-        'amountMaker': new BigNumber('8000000000000000000'),
-        'amountTaker': new BigNumber('1000000000000000000'),
-        'amountLeft': new BigNumber('8000000000000000000'),
-        'orderHash': '0x2ae1c63636d950958069ad244e297be3e5a41211eb9eb6f80d304aa74b2172a6',
-        'txHash': '0xe31c54436285089e75749c59b2c0b365c340f575af464a63c2f7b4f42e35f156',
-        'leaderTxHash': '0xa533ee10a57f9def52fc664ee1c00e37d5780eb31b371dd00d28719efed16eb8',
+        'makerToken': 'ETH',
+        'takerToken': 'BTC',
+        'amountMaker': '0.04700000',
+        'amountTaker': '0.00149629',
+        'amountLeft': '0.04700000',
+        'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+        'cost': '7.77004000',
       },
     ];
 
     let closeTrade = {
-      'tokenBuyDecimals': '18',
-      'tokenSellDecimals': '18',
-      'amountTaker': new BigNumber('8000000000000000000'),
-      'amountMaker': new BigNumber('1000000000000000000'),
-      'txHash': '0xaea9d878d8cd293421292a1c2c89fb41052607e6d21b00a50697f1ac5f583a33',
-      'tokenSellLastPrice': new BigNumber('0.125'),
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
-    };
-
-    let copyTrade = {
       'id': 2,
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+      'orderTime': '2019-04-17 17:55:50',
+      'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
       'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-      'leaderTxHash': '0x2958b1617c02445606972b64159ae891a5e8496517fda74ac9ffd0f1d5841f0d',
-      'orderHash': '0x3d236e9f45bffc69c3db9ff8a9bc553d2639cd187dee7c868caca0f9e6aaa404',
+      'makerToken': 'ETH',
+      'takerToken': 'BTC',
+      'amountMaker': '0.04700000',
+      'amountTaker': '0.00149629',
+      'amountLeft': '0.04700000',
+      'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+      'cost': '7.77004000',
     };
 
-    let rewardAndFees = await feeProcessor.percentageFee(openTrades, copyTrade, closeTrade, c8LastPrice);
+    let rewardAndFees = await feeProcessor.percentageFee(openTrades, closeTrade, c8LastPrice);
     rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber(0));
   });
 
@@ -53,39 +52,38 @@ describe('feeProcessor', function () {
       let openTrades = [
         {
           'id': 1,
-          'orderTime': '2019-03-05T06:59:18.000Z',
-          'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+          'orderTime': '2019-04-17 17:51:50',
+          'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
           'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-          'makerToken': '0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d',
-          'takerToken': '0x0000000000000000000000000000000000000000',
-          'amountMaker': new BigNumber('8000000000000000000'),
-          'amountTaker': new BigNumber('1000000000000000000'),
-          'amountLeft': new BigNumber('8000000000000000000'),
-          'orderHash': '0x2ae1c63636d950958069ad244e297be3e5a41211eb9eb6f80d304aa74b2172a6',
-          'txHash': '0xe31c54436285089e75749c59b2c0b365c340f575af464a63c2f7b4f42e35f156',
-          'leaderTxHash': '0xa533ee10a57f9def52fc664ee1c00e37d5780eb31b371dd00d28719efed16eb8',
+          'makerToken': 'ETH',
+          'takerToken': 'BTC',
+          'amountMaker': '0.04700000',
+          'amountTaker': '0.00149629',
+          'amountLeft': '0.04700000',
+          'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+          'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+          'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+          'cost': '7.77004000',
         },
       ];
 
       let closeTrade = {
-        'tokenBuyDecimals': '18',
-        'tokenSellDecimals': '18',
-        'amountTaker': new BigNumber('8000000000000000000'),
-        'amountMaker': new BigNumber('800000000000000000'),
-        'txHash': '0xaea9d878d8cd293421292a1c2c89fb41052607e6d21b00a50697f1ac5f583a33',
-        'tokenSellLastPrice': new BigNumber('0.1'),
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
-      };
-
-      let copyTrade = {
         'id': 2,
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+        'orderTime': '2019-04-17 17:55:50',
+        'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
         'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-        'leaderTxHash': '0x2958b1617c02445606972b64159ae891a5e8496517fda74ac9ffd0f1d5841f0d',
-        'orderHash': '0x3d236e9f45bffc69c3db9ff8a9bc553d2639cd187dee7c868caca0f9e6aaa404',
+        'makerToken': 'ETH',
+        'takerToken': 'BTC',
+        'amountMaker': '0.04700000',
+        'amountTaker': '0.00149629',
+        'amountLeft': '0.04700000',
+        'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+        'cost': '7.6',
       };
 
-      let rewardAndFees = await feeProcessor.percentageFee(openTrades, copyTrade, closeTrade, c8LastPrice);
+      let rewardAndFees = await feeProcessor.percentageFee(openTrades, closeTrade, c8LastPrice);
       rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber(0));
     });
 
@@ -93,108 +91,147 @@ describe('feeProcessor', function () {
     let openTrades = [
       {
         'id': 1,
-        'orderTime': '2019-03-05T06:59:18.000Z',
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+        'orderTime': '2019-04-17 17:51:50',
+        'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
         'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-        'makerToken': '0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d',
-        'takerToken': '0x0000000000000000000000000000000000000000',
-        'amountMaker': new BigNumber('8000000000000000000'),
-        'amountTaker': new BigNumber('1000000000000000000'),
-        'amountLeft': new BigNumber('8000000000000000000'),
-        'orderHash': '0x2ae1c63636d950958069ad244e297be3e5a41211eb9eb6f80d304aa74b2172a6',
-        'txHash': '0xe31c54436285089e75749c59b2c0b365c340f575af464a63c2f7b4f42e35f156',
-        'leaderTxHash': '0xa533ee10a57f9def52fc664ee1c00e37d5780eb31b371dd00d28719efed16eb8',
+        'makerToken': 'ETH',
+        'takerToken': 'BTC',
+        'amountMaker': '0.04700000',
+        'amountTaker': '0.00149629',
+        'amountLeft': '0.04700000',
+        'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+        'cost': '4.7',
       },
     ];
 
     let closeTrade = {
-      'tokenBuyDecimals': '18',
-      'tokenSellDecimals': '18',
-      'amountTaker': new BigNumber('4000000000000000000'),
-      'amountMaker': new BigNumber('1000000000000000000'),
-      'txHash': '0xaea9d878d8cd293421292a1c2c89fb41052607e6d21b00a50697f1ac5f583a33',
-      'tokenSellLastPrice': new BigNumber('0.25'),
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
-    };
-
-    let copyTrade = {
       'id': 2,
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+      'orderTime': '2019-04-17 17:55:50',
+      'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
       'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-      'leaderTxHash': '0x2958b1617c02445606972b64159ae891a5e8496517fda74ac9ffd0f1d5841f0d',
-      'orderHash': '0x3d236e9f45bffc69c3db9ff8a9bc553d2639cd187dee7c868caca0f9e6aaa404',
+      'makerToken': 'ETH',
+      'takerToken': 'BTC',
+      'amountMaker': '0.04700000',
+      'amountTaker': '0.00149629',
+      'amountLeft': '0.04700000',
+      'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+      'cost': '9.4',
     };
 
-    let rewardAndFees = await feeProcessor.percentageFee(openTrades, copyTrade, closeTrade, c8LastPrice);
-    rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('50000000000000000000'));
-    rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('50000000000000000000'));
+    let rewardAndFees = await feeProcessor.percentageFee(openTrades, closeTrade, c8LastPrice);
+    rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('4.7'));
+    rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('4.7'));
+    rewardAndFees.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
+    rewardAndFees.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
+    rewardAndFees.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4.23'));
+    rewardAndFees.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('0.47'));
+    rewardAndFees.processedFees[0].orderHashes.should.be.same.members(
+      [
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      ]);
+    rewardAndFees.processedFees[0].orderID.should.be.equal(1);
+
+    rewardAndFees.updateAmounts[0].amountLeft.should.be.bignumber.equal('0');
+    rewardAndFees.updateAmounts[0].orderId.should.be.bignumber.equal(1);
   });
 
   it('should able to calculate fee for 1 order and sell 2 orders for better price and will pay fee', async function () {
     let openTrades = [
       {
         'id': 1,
-        'orderTime': '2019-03-05T06:59:18.000Z',
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+        'orderTime': '2019-04-17 17:51:50',
+        'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
         'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-        'makerToken': '0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d',
-        'takerToken': '0x0000000000000000000000000000000000000000',
-        'amountMaker': new BigNumber('8000000000000000000'),
-        'amountTaker': new BigNumber('1000000000000000000'),
-        'amountLeft': new BigNumber('8000000000000000000'),
-        'orderHash': '0x2ae1c63636d950958069ad244e297be3e5a41211eb9eb6f80d304aa74b2172a6',
-        'txHash': '0xe31c54436285089e75749c59b2c0b365c340f575af464a63c2f7b4f42e35f156',
-        'leaderTxHash': '0xa533ee10a57f9def52fc664ee1c00e37d5780eb31b371dd00d28719efed16eb8',
+        'makerToken': 'ETH',
+        'takerToken': 'BTC',
+        'amountMaker': '0.094',
+        'amountTaker': '0.00149629',
+        'amountLeft': '0.094',
+        'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+        'cost': '9.4',
       },
     ];
 
     let closeTrade1 = {
-      'tokenBuyDecimals': '18',
-      'tokenSellDecimals': '18',
-      'amountTaker': new BigNumber('4000000000000000000'),
-      'amountMaker': new BigNumber('1000000000000000000'),
-      'txHash': '0xAea9d878d8cd293421292a1c2c89fb41052607e6d21b00a50697f1ac5f583a33',
-      'tokenSellLastPrice': new BigNumber('0.25'),
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+      'id': 2,
+      'orderTime': '2019-04-17 17:55:50',
+      'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
+      'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
+      'makerToken': 'ETH',
+      'takerToken': 'BTC',
+      'amountMaker': '0.04700000',
+      'amountTaker': '0.00149629',
+      'amountLeft': '0.04700000',
+      'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+      'cost': '9.4',
     };
 
     let closeTrade2 = {
-      'tokenBuyDecimals': '18',
-      'tokenSellDecimals': '18',
-      'amountTaker': new BigNumber('4000000000000000000'),
-      'amountMaker': new BigNumber('1000000000000000000'),
-      'txHash': '0xBea9d878d8cd293421292a1c2c89fb41052607e6d21b00a50697f1ac5f583a33',
-      'tokenSellLastPrice': new BigNumber('0.25'),
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
-    };
-
-    let copyTrade1 = {
       'id': 3,
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+      'orderTime': '2019-04-17 17:55:50',
+      'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
       'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-      'leaderTxHash': '0x2958b1617c02445606972b64159ae891a5e8496517fda74ac9ffd0f1d5841f0A',
-      'orderHash': '0x3d236e9f45bffc69c3db9ff8a9bc553d2639cd187dee7c868caca0f9e6aaa40A',
+      'makerToken': 'ETH',
+      'takerToken': 'BTC',
+      'amountMaker': '0.04700000',
+      'amountTaker': '0.00149629',
+      'amountLeft': '0.04700000',
+      'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+      'cost': '9.4',
     };
 
-    let copyTrade2 = {
-      'id': 4,
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
-      'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-      'leaderTxHash': '0x2958b1617c02445606972b64159ae891a5e8496517fda74ac9ffd0f1d5841f0B',
-      'orderHash': '0x3d236e9f45bffc69c3db9ff8a9bc553d2639cd187dee7c868caca0f9e6aaa40B',
-    };
+    let rewardAndFees1 = await feeProcessor.percentageFee(openTrades, closeTrade1, c8LastPrice);
+    rewardAndFees1.sumFee.should.be.bignumber.equal(new BigNumber('4.7'));
+    rewardAndFees1.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('4.7'));
+    rewardAndFees1.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
+    rewardAndFees1.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
+    rewardAndFees1.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4.23'));
+    rewardAndFees1.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('0.47'));
+    rewardAndFees1.processedFees[0].orderHashes.should.be.same.members(
+      [
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      ]);
+    rewardAndFees1.processedFees[0].orderID.should.be.equal(1);
 
-    let rewardAndFees1 = await feeProcessor.percentageFee(openTrades, copyTrade1, closeTrade1, c8LastPrice);
-    rewardAndFees1.sumFee.should.be.bignumber.equal(new BigNumber('50000000000000000000'));
-    rewardAndFees1.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('50000000000000000000'));
-    rewardAndFees1.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('45000000000000000000'));
-    rewardAndFees1.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('5000000000000000000'));
+    rewardAndFees1.updateAmounts[0].amountLeft.should.be.equal('0.047000000000000000');
+    rewardAndFees1.updateAmounts[0].orderId.should.be.bignumber.equal(1);
 
-    let rewardAndFees2 = await feeProcessor.percentageFee(openTrades, copyTrade2, closeTrade2, c8LastPrice);
-    rewardAndFees2.sumFee.should.be.bignumber.equal(new BigNumber('50000000000000000000'));
-    rewardAndFees2.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('50000000000000000000'));
-    rewardAndFees2.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('45000000000000000000'));
-    rewardAndFees2.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('5000000000000000000'));
+    openTrades[0].amountLeft = rewardAndFees1.updateAmounts[0].amountLeft;
+
+    let rewardAndFees2 = await feeProcessor.percentageFee(openTrades, closeTrade2, c8LastPrice);
+    rewardAndFees2.sumFee.should.be.bignumber.equal(new BigNumber('4.7'));
+    rewardAndFees2.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('4.7'));
+    rewardAndFees2.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
+    rewardAndFees2.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
+    rewardAndFees2.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4.23'));
+    rewardAndFees2.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('0.47'));
+    rewardAndFees2.processedFees[0].orderHashes.should.be.same.members(
+      [
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      ]);
+    rewardAndFees2.processedFees[0].orderID.should.be.equal(1);
+
+    rewardAndFees2.updateAmounts[0].amountLeft.should.be.bignumber.equal('0');
+    rewardAndFees2.updateAmounts[0].orderId.should.be.bignumber.equal(1);
   });
 
   it('should able to calculate fee for 1 order then sell 1st order at cost and sell 2nd order for better price.',
@@ -202,363 +239,476 @@ describe('feeProcessor', function () {
       let openTrades = [
         {
           'id': 1,
-          'orderTime': '2019-03-05T06:59:18.000Z',
-          'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+          'orderTime': '2019-04-17 17:51:50',
+          'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
           'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-          'makerToken': '0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d',
-          'takerToken': '0x0000000000000000000000000000000000000000',
-          'amountMaker': new BigNumber('8000000000000000000'),
-          'amountTaker': new BigNumber('1000000000000000000'),
-          'amountLeft': new BigNumber('8000000000000000000'),
-          'orderHash': '0x2ae1c63636d950958069ad244e297be3e5a41211eb9eb6f80d304aa74b2172a6',
-          'txHash': '0xe31c54436285089e75749c59b2c0b365c340f575af464a63c2f7b4f42e35f156',
-          'leaderTxHash': '0xa533ee10a57f9def52fc664ee1c00e37d5780eb31b371dd00d28719efed16eb8',
+          'makerToken': 'ETH',
+          'takerToken': 'BTC',
+          'amountMaker': '0.094',
+          'amountTaker': '0.00149629',
+          'amountLeft': '0.094',
+          'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+          'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+          'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+          'cost': '9.4',
         },
       ];
 
       let closeTrade1 = {
-        'tokenBuyDecimals': '18',
-        'tokenSellDecimals': '18',
-        'amountTaker': new BigNumber('4000000000000000000'),
-        'amountMaker': new BigNumber('500000000000000000'),
-        'txHash': '0xAea9d878d8cd293421292a1c2c89fb41052607e6d21b00a50697f1ac5f583a33',
-        'tokenSellLastPrice': new BigNumber('0.125'),
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+        'id': 2,
+        'orderTime': '2019-04-17 17:55:50',
+        'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
+        'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
+        'makerToken': 'ETH',
+        'takerToken': 'BTC',
+        'amountMaker': '0.04700000',
+        'amountTaker': '0.00149629',
+        'amountLeft': '0.04700000',
+        'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+        'cost': '4.7',
       };
 
       let closeTrade2 = {
-        'tokenBuyDecimals': '18',
-        'tokenSellDecimals': '18',
-        'amountTaker': new BigNumber('4000000000000000000'),
-        'amountMaker': new BigNumber('1000000000000000000'),
-        'txHash': '0xBea9d878d8cd293421292a1c2c89fb41052607e6d21b00a50697f1ac5f583a33',
-        'tokenSellLastPrice': new BigNumber('0.25'),
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
-      };
-
-      let copyTrade1 = {
         'id': 3,
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+        'orderTime': '2019-04-17 17:55:50',
+        'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
         'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-        'leaderTxHash': '0x2958b1617c02445606972b64159ae891a5e8496517fda74ac9ffd0f1d5841f0A',
-        'orderHash': '0x3d236e9f45bffc69c3db9ff8a9bc553d2639cd187dee7c868caca0f9e6aaa40A',
+        'makerToken': 'ETH',
+        'takerToken': 'BTC',
+        'amountMaker': '0.04700000',
+        'amountTaker': '0.00149629',
+        'amountLeft': '0.04700000',
+        'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+        'cost': '9.4',
       };
 
-      let copyTrade2 = {
-        'id': 4,
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
-        'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-        'leaderTxHash': '0x2958b1617c02445606972b64159ae891a5e8496517fda74ac9ffd0f1d5841f0B',
-        'orderHash': '0x3d236e9f45bffc69c3db9ff8a9bc553d2639cd187dee7c868caca0f9e6aaa40B',
-      };
-
-      let rewardAndFees1 = await feeProcessor.percentageFee(openTrades, copyTrade1, closeTrade1, c8LastPrice);
+      let rewardAndFees1 = await feeProcessor.percentageFee(openTrades, closeTrade1, c8LastPrice);
       rewardAndFees1.sumFee.should.be.bignumber.equal(new BigNumber('0'));
       rewardAndFees1.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('0'));
+      rewardAndFees1.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
+      rewardAndFees1.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
       rewardAndFees1.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('0'));
       rewardAndFees1.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('0'));
+      rewardAndFees1.processedFees[0].orderHashes.should.be.same.members(
+        [
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        ]);
+      rewardAndFees1.processedFees[0].orderID.should.be.equal(1);
 
-      let rewardAndFees2 = await feeProcessor.percentageFee(openTrades, copyTrade2, closeTrade2, c8LastPrice);
-      rewardAndFees2.sumFee.should.be.bignumber.equal(new BigNumber('50000000000000000000'));
-      rewardAndFees2.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('50000000000000000000'));
-      rewardAndFees2.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('45000000000000000000'));
-      rewardAndFees2.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('5000000000000000000'));
+      rewardAndFees1.updateAmounts[0].amountLeft.should.be.equal('0.047000000000000000');
+      rewardAndFees1.updateAmounts[0].orderId.should.be.bignumber.equal(1);
+
+      openTrades[0].amountLeft = rewardAndFees1.updateAmounts[0].amountLeft;
+
+      let rewardAndFees2 = await feeProcessor.percentageFee(openTrades, closeTrade2, c8LastPrice);
+      rewardAndFees2.sumFee.should.be.bignumber.equal(new BigNumber('4.7'));
+      rewardAndFees2.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('4.7'));
+      rewardAndFees2.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
+      rewardAndFees2.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
+      rewardAndFees2.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4.23'));
+      rewardAndFees2.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('0.47'));
+      rewardAndFees2.processedFees[0].orderHashes.should.be.same.members(
+        [
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        ]);
+      rewardAndFees2.processedFees[0].orderID.should.be.equal(1);
+
+      rewardAndFees2.updateAmounts[0].amountLeft.should.be.bignumber.equal('0');
+      rewardAndFees2.updateAmounts[0].orderId.should.be.bignumber.equal(1);
     });
 
   it('should able to calculate fee for 2 orders then sell 1 order for better price.', async function () {
     let openTrades = [
       {
         'id': 1,
-        'orderTime': '2019-03-05T06:59:18.000Z',
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+        'orderTime': '2019-04-17 17:51:50',
+        'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
         'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-        'makerToken': '0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d',
-        'takerToken': '0x0000000000000000000000000000000000000000',
-        'amountMaker': new BigNumber('4000000000000000000'),
-        'amountTaker': new BigNumber('500000000000000000'),
-        'amountLeft': new BigNumber('4000000000000000000'),
-        'orderHash': '0x2ae1c63636d950958069ad244e297be3e5a41211eb9eb6f80d304aa74b2172a6',
-        'txHash': '0xe31c54436285089e75749c59b2c0b365c340f575af464a63c2f7b4f42e35f156',
-        'leaderTxHash': '0xa533ee10a57f9def52fc664ee1c00e37d5780eb31b371dd00d28719efed16eb8',
+        'makerToken': 'ETH',
+        'takerToken': 'BTC',
+        'amountMaker': '0.0235',
+        'amountTaker': '0.00149629',
+        'amountLeft': '0.0235',
+        'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+        'cost': '2.35',
       },
       {
         'id': 2,
-        'orderTime': '2019-03-05T07:59:18.000Z',
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+        'orderTime': '2019-04-17 17:51:50',
+        'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
         'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-        'makerToken': '0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d',
-        'takerToken': '0x0000000000000000000000000000000000000000',
-        'amountMaker': new BigNumber('4000000000000000000'),
-        'amountTaker': new BigNumber('500000000000000000'),
-        'amountLeft': new BigNumber('4000000000000000000'),
-        'orderHash': '0x2ae1c63636d950958069ad244e297be3e5a41211eb9eb6f80d304aa74b2172a6',
-        'txHash': '0xe31c54436285089e75749c59b2c0b365c340f575af464a63c2f7b4f42e35f156',
-        'leaderTxHash': '0xa533ee10a57f9def52fc664ee1c00e37d5780eb31b371dd00d28719efed16eb8',
+        'makerToken': 'ETH',
+        'takerToken': 'BTC',
+        'amountMaker': '0.0235',
+        'amountTaker': '0.00149629',
+        'amountLeft': '0.0235',
+        'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279760',
+        'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279760',
+        'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279749',
+        'cost': '2.35',
       },
     ];
 
-    let closeTrade1 = {
-      'tokenBuyDecimals': '18',
-      'tokenSellDecimals': '18',
-      'amountTaker': new BigNumber('8000000000000000000'),
-      'amountMaker': new BigNumber('2000000000000000000'),
-      'txHash': '0xAea9d878d8cd293421292a1c2c89fb41052607e6d21b00a50697f1ac5f583a33',
-      'tokenSellLastPrice': new BigNumber('0.25'),
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
-    };
-
-    let copyTrade1 = {
-      'id': 3,
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+    let closeTrade = {
+      'id': 12,
+      'orderTime': '2019-04-17 17:55:50',
+      'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
       'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-      'leaderTxHash': '0x2958b1617c02445606972b64159ae891a5e8496517fda74ac9ffd0f1d5841f0A',
-      'orderHash': '0x3d236e9f45bffc69c3db9ff8a9bc553d2639cd187dee7c868caca0f9e6aaa40A',
+      'makerToken': 'ETH',
+      'takerToken': 'BTC',
+      'amountMaker': '0.04700000',
+      'amountTaker': '0.00149629',
+      'amountLeft': '0.04700000',
+      'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+      'cost': '9.4',
     };
 
-    let rewardAndFees1 = await feeProcessor.percentageFee(openTrades, copyTrade1, closeTrade1, c8LastPrice);
-    rewardAndFees1.sumFee.should.be.bignumber.equal(new BigNumber('100000000000000000000'));
-    rewardAndFees1.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('50000000000000000000'));
-    rewardAndFees1.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('45000000000000000000'));
-    rewardAndFees1.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('5000000000000000000'));
+    let rewardAndFees = await feeProcessor.percentageFee(openTrades, closeTrade, c8LastPrice);
+    rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('4.7'));
+    rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('2.35'));
+    rewardAndFees.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
+    rewardAndFees.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
+    rewardAndFees.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('2.115'));
+    rewardAndFees.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('0.235'));
+    rewardAndFees.processedFees[0].orderHashes.should.be.same.members(
+      [
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      ]);
+    rewardAndFees.processedFees[0].orderID.should.be.equal(1);
 
-    rewardAndFees1.processedFees[1].C8FEE.should.be.bignumber.equal(new BigNumber('50000000000000000000'));
-    rewardAndFees1.processedFees[1].reward.should.be.bignumber.equal(new BigNumber('45000000000000000000'));
-    rewardAndFees1.processedFees[1].relayFee.should.be.bignumber.equal(new BigNumber('5000000000000000000'));
+    rewardAndFees.updateAmounts[0].amountLeft.should.be.bignumber.equal('0');
+    rewardAndFees.updateAmounts[0].orderId.should.be.bignumber.equal(1);
+
+    rewardAndFees.processedFees[1].C8FEE.should.be.bignumber.equal(new BigNumber('2.35'));
+    rewardAndFees.processedFees[1].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
+    rewardAndFees.processedFees[1].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
+    rewardAndFees.processedFees[1].reward.should.be.bignumber.equal(new BigNumber('2.115'));
+    rewardAndFees.processedFees[1].relayFee.should.be.bignumber.equal(new BigNumber('0.235'));
+    rewardAndFees.processedFees[1].orderHashes.should.be.same.members(
+      [
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279749',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279760',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      ]);
+    rewardAndFees.processedFees[1].orderID.should.be.equal(2);
+
+    rewardAndFees.updateAmounts[1].amountLeft.should.be.bignumber.equal('0');
+    rewardAndFees.updateAmounts[1].orderId.should.be.bignumber.equal(2);
   });
 
   it('should able to calculate fee for 2 orders then sell 2 order same price and no fee', async function () {
-    let openTrades1 = [
+    let openTrades = [
       {
         'id': 1,
-        'orderTime': '2019-03-05T06:59:18.000Z',
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+        'orderTime': '2019-04-17 17:51:50',
+        'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
         'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-        'makerToken': '0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d',
-        'takerToken': '0x0000000000000000000000000000000000000000',
-        'amountMaker': new BigNumber('4000000000000000000'),
-        'amountTaker': new BigNumber('500000000000000000'),
-        'amountLeft': new BigNumber('4000000000000000000'),
-        'orderHash': '0x2ae1c63636d950958069ad244e297be3e5a41211eb9eb6f80d304aa74b2172a6',
-        'txHash': '0xe31c54436285089e75749c59b2c0b365c340f575af464a63c2f7b4f42e35f156',
-        'leaderTxHash': '0xa533ee10a57f9def52fc664ee1c00e37d5780eb31b371dd00d28719efed16eb8',
+        'makerToken': 'ETH',
+        'takerToken': 'BTC',
+        'amountMaker': '0.0235',
+        'amountTaker': '0.00149629',
+        'amountLeft': '0.0235',
+        'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+        'cost': '2.35',
       },
-    ];
-
-    let openTrades2 = [
       {
         'id': 2,
-        'orderTime': '2019-03-05T07:59:18.000Z',
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+        'orderTime': '2019-04-17 17:51:50',
+        'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
         'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-        'makerToken': '0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d',
-        'takerToken': '0x0000000000000000000000000000000000000000',
-        'amountMaker': new BigNumber('4000000000000000000'),
-        'amountTaker': new BigNumber('500000000000000000'),
-        'amountLeft': new BigNumber('4000000000000000000'),
-        'orderHash': '0x2ae1c63636d950958069ad244e297be3e5a41211eb9eb6f80d304aa74b2172a6',
-        'txHash': '0xe31c54436285089e75749c59b2c0b365c340f575af464a63c2f7b4f42e35f156',
-        'leaderTxHash': '0xa533ee10a57f9def52fc664ee1c00e37d5780eb31b371dd00d28719efed16eb8',
+        'makerToken': 'ETH',
+        'takerToken': 'BTC',
+        'amountMaker': '0.0235',
+        'amountTaker': '0.00149629',
+        'amountLeft': '0.0235',
+        'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279760',
+        'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279760',
+        'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279749',
+        'cost': '2.35',
       },
     ];
 
-    let closeTrade1 = {
-      'tokenBuyDecimals': '18',
-      'tokenSellDecimals': '18',
-      'amountTaker': new BigNumber('4000000000000000000'),
-      'amountMaker': new BigNumber('500000000000000000'),
-      'txHash': '0xAea9d878d8cd293421292a1c2c89fb41052607e6d21b00a50697f1ac5f583a33',
-      'tokenSellLastPrice': new BigNumber('0.125'),
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
-    };
-
-    let closeTrade2 = {
-      'tokenBuyDecimals': '18',
-      'tokenSellDecimals': '18',
-      'amountTaker': new BigNumber('4000000000000000000'),
-      'amountMaker': new BigNumber('500000000000000000'),
-      'txHash': '0xBea9d878d8cd293421292a1c2c89fb41052607e6d21b00a50697f1ac5f583a33',
-      'tokenSellLastPrice': new BigNumber('0.125'),
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
-    };
-
-    let copyTrade1 = {
-      'id': 3,
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+    let closeTrade = {
+      'id': 12,
+      'orderTime': '2019-04-17 17:55:50',
+      'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
       'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-      'leaderTxHash': '0x2958b1617c02445606972b64159ae891a5e8496517fda74ac9ffd0f1d5841f0A',
-      'orderHash': '0x3d236e9f45bffc69c3db9ff8a9bc553d2639cd187dee7c868caca0f9e6aaa40A',
+      'makerToken': 'ETH',
+      'takerToken': 'BTC',
+      'amountMaker': '0.04700000',
+      'amountTaker': '0.00149629',
+      'amountLeft': '0.04700000',
+      'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+      'cost': '4.7',
     };
 
-    let copyTrade2 = {
-      'id': 4,
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
-      'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-      'leaderTxHash': '0x2958b1617c02445606972b64159ae891a5e8496517fda74ac9ffd0f1d5841f0B',
-      'orderHash': '0x3d236e9f45bffc69c3db9ff8a9bc553d2639cd187dee7c868caca0f9e6aaa40A',
-    };
+    let rewardAndFees = await feeProcessor.percentageFee(openTrades, closeTrade, c8LastPrice);
+    rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('0'));
+    rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('0'));
+    rewardAndFees.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
+    rewardAndFees.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
+    rewardAndFees.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('0'));
+    rewardAndFees.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('0'));
+    rewardAndFees.processedFees[0].orderHashes.should.be.same.members(
+      [
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      ]);
+    rewardAndFees.processedFees[0].orderID.should.be.equal(1);
 
-    let rewardAndFees1 = await feeProcessor.percentageFee(openTrades1, copyTrade1, closeTrade1, c8LastPrice);
-    rewardAndFees1.sumFee.should.be.bignumber.equal(new BigNumber(0));
-    rewardAndFees1.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber(0));
-    rewardAndFees1.processedFees[0].reward.should.be.bignumber.equal(new BigNumber(0));
-    rewardAndFees1.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber(0));
+    rewardAndFees.updateAmounts[0].amountLeft.should.be.bignumber.equal('0');
+    rewardAndFees.updateAmounts[0].orderId.should.be.bignumber.equal(1);
 
-    let rewardAndFees2 = await feeProcessor.percentageFee(openTrades2, copyTrade2, closeTrade2, c8LastPrice);
-    rewardAndFees2.sumFee.should.be.bignumber.equal(new BigNumber(0));
-    rewardAndFees2.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber(0));
-    rewardAndFees2.processedFees[0].reward.should.be.bignumber.equal(new BigNumber(0));
-    rewardAndFees2.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber(0));
+    rewardAndFees.processedFees[1].C8FEE.should.be.bignumber.equal(new BigNumber('0'));
+    rewardAndFees.processedFees[1].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
+    rewardAndFees.processedFees[1].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
+    rewardAndFees.processedFees[1].reward.should.be.bignumber.equal(new BigNumber('0'));
+    rewardAndFees.processedFees[1].relayFee.should.be.bignumber.equal(new BigNumber('0'));
+    rewardAndFees.processedFees[1].orderHashes.should.be.same.members(
+      [
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279749',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279760',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      ]);
+    rewardAndFees.processedFees[1].orderID.should.be.equal(2);
+
+    rewardAndFees.updateAmounts[1].amountLeft.should.be.bignumber.equal('0');
+    rewardAndFees.updateAmounts[1].orderId.should.be.bignumber.equal(2);
   });
 
   it('should able to calculate fee for 2 orders different price then sell 1 order for better price.',
     async function () {
-      let openTrades1 = [
+      let openTrades = [
         {
           'id': 1,
-          'orderTime': '2019-03-05T06:59:18.000Z',
-          'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+          'orderTime': '2019-04-17 17:51:50',
+          'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
           'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-          'makerToken': '0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d',
-          'takerToken': '0x0000000000000000000000000000000000000000',
-          'amountMaker': new BigNumber('4000000000000000000'),
-          'amountTaker': new BigNumber('500000000000000000'),
-          'amountLeft': new BigNumber('4000000000000000000'),
-          'orderHash': '0x2ae1c63636d950958069ad244e297be3e5a41211eb9eb6f80d304aa74b2172a6',
-          'txHash': '0xe31c54436285089e75749c59b2c0b365c340f575af464a63c2f7b4f42e35f156',
-          'leaderTxHash': '0xa533ee10a57f9def52fc664ee1c00e37d5780eb31b371dd00d28719efed16eb8',
+          'makerToken': 'ETH',
+          'takerToken': 'BTC',
+          'amountMaker': '0.0235',
+          'amountTaker': '0.00149629',
+          'amountLeft': '0.0235',
+          'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+          'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+          'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+          'cost': '4.7',
         },
         {
           'id': 2,
-          'orderTime': '2019-03-05T07:59:18.000Z',
-          'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+          'orderTime': '2019-04-17 17:51:50',
+          'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
           'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-          'makerToken': '0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d',
-          'takerToken': '0x0000000000000000000000000000000000000000',
-          'amountMaker': new BigNumber('4000000000000000000'),
-          'amountTaker': new BigNumber('600000000000000000'),
-          'amountLeft': new BigNumber('4000000000000000000'),
-          'orderHash': '0x2ae1c63636d950958069ad244e297be3e5a41211eb9eb6f80d304aa74b2172a6',
-          'txHash': '0xe31c54436285089e75749c59b2c0b365c340f575af464a63c2f7b4f42e35f156',
-          'leaderTxHash': '0xa533ee10a57f9def52fc664ee1c00e37d5780eb31b371dd00d28719efed16eb8',
+          'makerToken': 'ETH',
+          'takerToken': 'BTC',
+          'amountMaker': '0.0235',
+          'amountTaker': '0.00149629',
+          'amountLeft': '0.0235',
+          'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279760',
+          'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279760',
+          'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279749',
+          'cost': '1.175',
         },
       ];
 
-      let closeTrade1 = {
-        'tokenBuyDecimals': '18',
-        'tokenSellDecimals': '18',
-        'amountTaker': new BigNumber('8000000000000000000'),
-        'amountMaker': new BigNumber('2000000000000000000'),
-        'txHash': '0xAea9d878d8cd293421292a1c2c89fb41052607e6d21b00a50697f1ac5f583a33',
-        'tokenSellLastPrice': new BigNumber('0.25'),
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
-      };
-
-      let copyTrade1 = {
-        'id': 3,
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+      let closeTrade = {
+        'id': 12,
+        'orderTime': '2019-04-17 17:55:50',
+        'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
         'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-        'leaderTxHash': '0x2958b1617c02445606972b64159ae891a5e8496517fda74ac9ffd0f1d5841f0A',
-        'orderHash': '0x3d236e9f45bffc69c3db9ff8a9bc553d2639cd187dee7c868caca0f9e6aaa40A',
+        'makerToken': 'ETH',
+        'takerToken': 'BTC',
+        'amountMaker': '0.04700000',
+        'amountTaker': '0.00149629',
+        'amountLeft': '0.04700000',
+        'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+        'cost': '4.7',
       };
 
-      let rewardAndFees1 = await feeProcessor.percentageFee(openTrades1, copyTrade1, closeTrade1, c8LastPrice);
-      rewardAndFees1.sumFee.should.be.bignumber.equal(new BigNumber('90000000000000000000'));
-      rewardAndFees1.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('50000000000000000000'));
-      rewardAndFees1.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('45000000000000000000'));
-      rewardAndFees1.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('5000000000000000000'));
+      let rewardAndFees = await feeProcessor.percentageFee(openTrades, closeTrade, c8LastPrice);
+      rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('1.175'));
+      rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('0'));
+      rewardAndFees.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
+      rewardAndFees.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
+      rewardAndFees.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('0'));
+      rewardAndFees.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('0'));
+      rewardAndFees.processedFees[0].orderHashes.should.be.same.members(
+        [
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        ]);
+      rewardAndFees.processedFees[0].orderID.should.be.equal(1);
 
-      rewardAndFees1.processedFees[1].C8FEE.should.be.bignumber.equal(new BigNumber('40000000000000000000'));
-      rewardAndFees1.processedFees[1].reward.should.be.bignumber.equal(new BigNumber('36000000000000000000'));
-      rewardAndFees1.processedFees[1].relayFee.should.be.bignumber.equal(new BigNumber('4000000000000000000'));
+      rewardAndFees.updateAmounts[0].amountLeft.should.be.bignumber.equal('0');
+      rewardAndFees.updateAmounts[0].orderId.should.be.bignumber.equal(1);
+
+      rewardAndFees.processedFees[1].C8FEE.should.be.bignumber.equal(new BigNumber('1.175'));
+      rewardAndFees.processedFees[1].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
+      rewardAndFees.processedFees[1].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
+      rewardAndFees.processedFees[1].reward.should.be.bignumber.equal(new BigNumber('1.0575'));
+      rewardAndFees.processedFees[1].relayFee.should.be.bignumber.equal(new BigNumber('0.1175'));
+      rewardAndFees.processedFees[1].orderHashes.should.be.same.members(
+        [
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279749',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279760',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        ]);
+      rewardAndFees.processedFees[1].orderID.should.be.equal(2);
+
+      rewardAndFees.updateAmounts[1].amountLeft.should.be.bignumber.equal('0');
+      rewardAndFees.updateAmounts[1].orderId.should.be.bignumber.equal(2);
     });
 
   it('should able to calculate fee for 2 orders different price and amount then sell 1 order for better price.',
     async function () {
-      let openTrades1 = [
+      let openTrades = [
         {
           'id': 1,
-          'orderTime': '2019-03-05T06:59:18.000Z',
-          'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+          'orderTime': '2019-04-17 17:51:50',
+          'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
           'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-          'makerToken': '0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d',
-          'takerToken': '0x0000000000000000000000000000000000000000',
-          'amountMaker': new BigNumber('5000000000000000000'),
-          'amountTaker': new BigNumber('500000000000000000'),
-          'amountLeft': new BigNumber('5000000000000000000'),
-          'orderHash': '0x2ae1c63636d950958069ad244e297be3e5a41211eb9eb6f80d304aa74b2172a6',
-          'txHash': '0xe31c54436285089e75749c59b2c0b365c340f575af464a63c2f7b4f42e35f156',
-          'leaderTxHash': '0xa533ee10a57f9def52fc664ee1c00e37d5780eb31b371dd00d28719efed16eb8',
+          'makerToken': 'ETH',
+          'takerToken': 'BTC',
+          'amountMaker': '0.0235',
+          'amountTaker': '0.00149629',
+          'amountLeft': '0.0235',
+          'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+          'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+          'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+          'cost': '4.7',
         },
         {
           'id': 2,
-          'orderTime': '2019-03-05T07:59:18.000Z',
-          'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+          'orderTime': '2019-04-17 17:51:50',
+          'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
           'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-          'makerToken': '0xd42debe4edc92bd5a3fbb4243e1eccf6d63a4a5d',
-          'takerToken': '0x0000000000000000000000000000000000000000',
-          'amountMaker': new BigNumber('3000000000000000000'),
-          'amountTaker': new BigNumber('600000000000000000'),
-          'amountLeft': new BigNumber('3000000000000000000'),
-          'orderHash': '0x2ae1c63636d950958069ad244e297be3e5a41211eb9eb6f80d304aa74b2172a6',
-          'txHash': '0xe31c54436285089e75749c59b2c0b365c340f575af464a63c2f7b4f42e35f156',
-          'leaderTxHash': '0xa533ee10a57f9def52fc664ee1c00e37d5780eb31b371dd00d28719efed16eb8',
+          'makerToken': 'ETH',
+          'takerToken': 'BTC',
+          'amountMaker': '0.047',
+          'amountTaker': '0.00149629',
+          'amountLeft': '0.047',
+          'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279760',
+          'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279760',
+          'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279749',
+          'cost': '2.35',
         },
       ];
 
-      let closeTrade1 = {
-        'tokenBuyDecimals': '18',
-        'tokenSellDecimals': '18',
-        'amountTaker': new BigNumber('8000000000000000000'),
-        'amountMaker': new BigNumber('2000000000000000000'),
-        'txHash': '0xAea9d878d8cd293421292a1c2c89fb41052607e6d21b00a50697f1ac5f583a33',
-        'tokenSellLastPrice': new BigNumber('0.25'),
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
-      };
-
-      let copyTrade1 = {
-        'id': 3,
-        'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+      let closeTrade = {
+        'id': 12,
+        'orderTime': '2019-04-17 17:55:50',
+        'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
         'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-        'leaderTxHash': '0x2958b1617c02445606972b64159ae891a5e8496517fda74ac9ffd0f1d5841f0A',
-        'orderHash': '0x3d236e9f45bffc69c3db9ff8a9bc553d2639cd187dee7c868caca0f9e6aaa40A',
+        'makerToken': 'ETH',
+        'takerToken': 'BTC',
+        'amountMaker': '0.04700000',
+        'amountTaker': '0.00149629',
+        'amountLeft': '0.04700000',
+        'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+        'cost': '4.7',
       };
 
-      let rewardAndFees1 = await feeProcessor.percentageFee(openTrades1, copyTrade1, closeTrade1, c8LastPrice);
-      rewardAndFees1.sumFee.should.be.bignumber.equal(new BigNumber('90000000000000000000'));
-      rewardAndFees1.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('75000000000000000000'));
-      rewardAndFees1.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('67500000000000000000'));
-      rewardAndFees1.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('7500000000000000000'));
+      let rewardAndFees = await feeProcessor.percentageFee(openTrades, closeTrade, c8LastPrice);
+      rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('1.175'));
+      rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('0'));
+      rewardAndFees.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
+      rewardAndFees.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
+      rewardAndFees.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('0'));
+      rewardAndFees.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('0'));
+      rewardAndFees.processedFees[0].orderHashes.should.be.same.members(
+        [
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279750',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        ]);
+      rewardAndFees.processedFees[0].orderID.should.be.equal(1);
 
-      rewardAndFees1.processedFees[1].C8FEE.should.be.bignumber.equal(new BigNumber('15000000000000000000'));
-      rewardAndFees1.processedFees[1].reward.should.be.bignumber.equal(new BigNumber('13500000000000000000'));
-      rewardAndFees1.processedFees[1].relayFee.should.be.bignumber.equal(new BigNumber('1500000000000000000'));
+      rewardAndFees.updateAmounts[0].amountLeft.should.be.bignumber.equal('0');
+      rewardAndFees.updateAmounts[0].orderId.should.be.bignumber.equal(1);
+
+      rewardAndFees.processedFees[1].C8FEE.should.be.bignumber.equal(new BigNumber('1.175'));
+      rewardAndFees.processedFees[1].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
+      rewardAndFees.processedFees[1].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
+      rewardAndFees.processedFees[1].reward.should.be.bignumber.equal(new BigNumber('1.0575'));
+      rewardAndFees.processedFees[1].relayFee.should.be.bignumber.equal(new BigNumber('0.1175'));
+      rewardAndFees.processedFees[1].orderHashes.should.be.same.members(
+        [
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279749',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279760',
+          '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+        ]);
+      rewardAndFees.processedFees[1].orderID.should.be.equal(2);
+
+      rewardAndFees.updateAmounts[1].amountLeft.should.be.bignumber.equal('0.0235');
+      rewardAndFees.updateAmounts[1].orderId.should.be.bignumber.equal(2);
     });
 
   it('should able to calculate fee with no open order at fixed fee.', async function () {
-    let openTrades1 = [];
+    let openTrades = [];
 
-    let closeTrade1 = {
-      'tokenBuyDecimals': '18',
-      'tokenSellDecimals': '18',
-      'amountTaker': new BigNumber('8000000000000000000'),
-      'amountMaker': new BigNumber('2000000000000000000'),
-      'txHash': '0xAea9d878d8cd293421292a1c2c89fb41052607e6d21b00a50697f1ac5f583a33',
-      'tokenSellLastPrice': new BigNumber('0.25'),
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
-    };
-
-    let copyTrade1 = {
-      'id': 3,
-      'leader': '0x2d3119024507f18e6327e4b59868a899c37d2ec8',
+    let closeTrade = {
+      'id': 12,
+      'orderTime': '2019-04-17 17:55:50',
+      'leader': '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
       'follower': '0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a',
-      'leaderTxHash': '0x2958b1617c02445606972b64159ae891a5e8496517fda74ac9ffd0f1d5841f0A',
-      'orderHash': '0x3d236e9f45bffc69c3db9ff8a9bc553d2639cd187dee7c868caca0f9e6aaa40A',
+      'makerToken': 'ETH',
+      'takerToken': 'BTC',
+      'amountMaker': '0.04700000',
+      'amountTaker': '0.00149629',
+      'amountLeft': '0.04700000',
+      'orderHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      'txHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      'leaderTxHash': '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+      'cost': '4.7',
     };
 
-    let rewardAndFees1 = await feeProcessor.percentageFee(openTrades1, copyTrade1, closeTrade1, c8LastPrice);
-    rewardAndFees1.sumFee.should.be.bignumber.equal(new BigNumber('8000000000000000000'));
-    rewardAndFees1.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('8000000000000000000'));
-    rewardAndFees1.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4000000000000000000'));
-    rewardAndFees1.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('4000000000000000000'));
+    let rewardAndFees = await feeProcessor.percentageFee(openTrades, closeTrade, c8LastPrice);
+    rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('8'));
+    rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('8'));
+    rewardAndFees.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
+    rewardAndFees.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
+    rewardAndFees.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4'));
+    rewardAndFees.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('4'));
+    rewardAndFees.processedFees[0].orderHashes.should.be.same.members(
+      [
+        '0x',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279752',
+        '0x',
+        '0x0000000000000000000000000000000000b17a7ce00000000000000329279751',
+      ]);
   });
 });

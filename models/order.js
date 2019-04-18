@@ -21,7 +21,15 @@ order.insertNewOrder = async function insertNewOrder (order) {
 
 order.find = async function find (orderHash) {
   return (await mysql.query(`
-    SELECT * FROM carboneum.sent_order WHERE order_hash = ?
+    SELECT  leader,
+            follower,
+            leader_tx_hash AS leaderTxHash,
+            order_hash AS orderHash,
+            order_time AS orderTime,
+            isCancel,
+            filled,
+            initialAmount
+    FROM carboneum.sent_order WHERE order_hash = ?
   `, [orderHash]))[0];
 };
 
