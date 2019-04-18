@@ -50,7 +50,7 @@ const onTrade = async function (exchange, leader, trade) {
       let openTrades = await Trade.getAvailableTrade(asset, order.follower);
       let c8LastPrice = await exchange.getC8LastPrice();
       c8LastPrice = new BigNumber(c8LastPrice);
-      let rewardAndFees = await feeProcessor.percentageFee(openTrades, order, tradeComplete, c8LastPrice);
+      let rewardAndFees = await feeProcessor.percentageFee(openTrades, tradeComplete, c8LastPrice);
 
       // update db
       let updateAmounts = rewardAndFees.updateAmounts;
