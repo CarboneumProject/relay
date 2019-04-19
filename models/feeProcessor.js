@@ -19,7 +19,7 @@ feeProcessor.percentageFee = async function (openTrades, closeTrade, c8LastPrice
       let lastAmount = new BigNumber(openOrder.amountLeft);
       subAmountLeft = subAmountLeft.sub(lastAmount);
       let openPrice = new BigNumber(openOrder.cost).div(openOrder.amountMaker);
-
+      const etherDecimals = 10 ** 18;
       let profit = new BigNumber(0);
       if (subAmountLeft.gte(0)) {
         updateAmounts.push({ 'amountLeft': '0', 'orderId': openOrder.id });
@@ -29,9 +29,9 @@ feeProcessor.percentageFee = async function (openTrades, closeTrade, c8LastPrice
         profit = (tokenSellLastPrice.sub(openPrice)).mul(PROFIT_PERCENTAGE).mul(lastAmount.add(subAmountLeft));
       }
       if (openPrice.lt(tokenSellLastPrice)) { // Has profit
-        let reward = profit.div(c8LastPrice).mul(network.LEADER_REWARD_PERCENT);
-        let fee = profit.div(c8LastPrice).mul(network.SYSTEM_FEE_PERCENT);
-        let C8FEE = profit.div(c8LastPrice);
+        let reward = profit.div(c8LastPrice).mul(network.LEADER_REWARD_PERCENT).mul(etherDecimals);
+        let fee = profit.div(c8LastPrice).mul(network.SYSTEM_FEE_PERCENT).mul(etherDecimals);
+        let C8FEE = reward.plus(fee);
         sumC8FEE = sumC8FEE.add(C8FEE);
 
         processedFees.push({
@@ -64,17 +64,16 @@ feeProcessor.percentageFee = async function (openTrades, closeTrade, c8LastPrice
       }
     }
   } else {
-    const decimalC8 = 10 ** 18;
-    let reward = new BigNumber(network.REWARD).div(decimalC8);
-    let fee = new BigNumber(network.FEE).div(decimalC8);
+    let reward = new BigNumber(network.REWARD);
+    let fee = new BigNumber(network.FEE);
     let C8FEE = reward.add(fee);
     sumC8FEE = sumC8FEE.add(C8FEE);
     processedFees.push({
       'C8FEE': C8FEE,
       'leader': closeTrade.leader,
       'follower': closeTrade.follower,
-      'reward': new BigNumber(network.REWARD).div(decimalC8),
-      'relayFee': new BigNumber(network.FEE).div(decimalC8),
+      'reward': new BigNumber(network.REWARD),
+      'relayFee': new BigNumber(network.FEE),
       'orderHashes': ['0x',
         closeTrade.leaderTxHash,
         '0x',
