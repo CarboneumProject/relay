@@ -16,7 +16,6 @@ const feeProcessor = require('./models/feeProcessor');
 const socialTrading = require('./models/socialTradingContract');
 
 const onTrade = async function (exchange, leader, trade) {
-  console.dir(trade);
   let txHash = utils.tradeTx(exchange.id, trade.id);
   let order = await Order.find(txHash);
   if (order !== undefined) {
@@ -105,6 +104,7 @@ const onTrade = async function (exchange, leader, trade) {
               msg += '\nFollowing your leader, your order is placing.';
               push.sendMsgToUser(follower, title, msg);
             } catch (e) {
+              console.log(e);
               msg += `\nYour balance of ${asset} in your ${exchange.name.toUpperCase()} account is not enough.`;
               push.sendMsgToUser(follower, title, msg);
             }
