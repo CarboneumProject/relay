@@ -29,9 +29,9 @@ feeProcessor.percentageFee = async function (openTrades, closeTrade, c8LastPrice
         profit = (tokenSellLastPrice.sub(openPrice)).mul(PROFIT_PERCENTAGE).mul(lastAmount.add(subAmountLeft));
       }
       if (openPrice.lt(tokenSellLastPrice)) { // Has profit
-        let reward = profit.div(c8LastPrice).mul(network.LEADER_REWARD_PERCENT).mul(etherDecimals);
-        let fee = profit.div(c8LastPrice).mul(network.SYSTEM_FEE_PERCENT).mul(etherDecimals);
-        let C8FEE = reward.plus(fee);
+        let reward = profit.div(c8LastPrice).mul(network.LEADER_REWARD_PERCENT).mul(etherDecimals).toFixed(0);
+        let fee = profit.div(c8LastPrice).mul(network.SYSTEM_FEE_PERCENT).mul(etherDecimals).toFixed(0);
+        let C8FEE = profit.div(c8LastPrice).mul(etherDecimals);
         sumC8FEE = sumC8FEE.add(C8FEE);
 
         processedFees.push({
