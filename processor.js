@@ -16,6 +16,7 @@ const feeProcessor = require('./models/feeProcessor');
 const socialTrading = require('./models/socialTradingContract');
 
 const onTrade = async function (exchange, leader, trade) {
+  console.log(trade);
   let txHash = utils.tradeTx(exchange.id, trade.id);
   let order = await Order.find(txHash);
   if (order !== undefined) {
@@ -64,8 +65,10 @@ const onTrade = async function (exchange, leader, trade) {
       let ext = '';
       let c8Decimals = 18;
       let repeatDecimalC8 = '0'.repeat(c8Decimals);
+      let sumFee = rewardAndFees.sumFee;
       if (rewardAndFees.sumFee > new BigNumber(0)) {
-        let totalFee = numeral(rewardAndFees.sumFee).format(`0,0.[${repeatDecimalC8}]`);
+        sumFee = sumFee.div(10 ** c8Decimals);
+        let totalFee = numeral(sumFee).format(`0,0.[${repeatDecimalC8}]`);
         ext = `\nReward + Fee ${totalFee} C8`;
       }
 
