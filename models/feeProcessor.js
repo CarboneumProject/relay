@@ -33,7 +33,7 @@ feeProcessor.percentageFee = async function (openTrades, closeTrade, c8LastPrice
         let fee = profit.div(c8LastPrice).mul(network.SYSTEM_FEE_PERCENT).mul(etherDecimals).toFixed(0);
         let C8FEE = profit.div(c8LastPrice).mul(etherDecimals);
         sumC8FEE = sumC8FEE.add(C8FEE);
-
+        console.log(reward, fee, C8FEE);
         processedFees.push({
           'C8FEE': C8FEE,
           'leader': closeTrade.leader,

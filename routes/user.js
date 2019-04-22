@@ -37,4 +37,30 @@ router.post('/register', async (req, res, next) => {
   }
 });
 
+router.get('/balances', async (req, res, next) => {
+  try {
+    const exchange = req.query.exchange;
+    const wallet = req.query.wallet;
+    const user = req.query.user;
+    const signature = req.query.signature;
+    const addressSigner = validateSignature(signature);
+    if (addressSigner !== user.toLowerCase()) {
+      res.status(400);
+      return res.send({ 'status': 'no', 'message': 'Invalid signature.' });
+    }
+    const exchangeModel = require(`../exchanges/${exchange}`);
+    let userDetail = await User.find(wallet, exchange);
+    if (userDetail === null) {
+      res.status(400);
+      return res.send({ 'status': 'no', 'message': 'Invalid signature.' });
+    }
+    let balances = await exchangeModel.balances(crypt.decrypt(userDetail.apiKey), crypt.decrypt(userDetail.apiSecret));
+    res.send(balances);
+  } catch (e) {
+    console.error(e);
+    res.status(500);
+    return res.send({ 'status': 'no', 'message': e.message });
+  }
+});
+
 module.exports = router;
