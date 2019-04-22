@@ -15,4 +15,10 @@ describe('binance', function () {
       }
     }
   });
+
+  it('should get price of C8 token', async function () {
+    let c8Price = await binance.getC8LastPrice();
+    const lowestPrice = 0.01;
+    c8Price.should.be.gte(lowestPrice);
+  });
 });

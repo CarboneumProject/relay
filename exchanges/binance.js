@@ -58,7 +58,7 @@ exchange.newOrder = async function newOrder (apiKey, apiSecret, order) {
   return orderPromise(order.side, order.symbol, order.quantity, order.price, {});
 };
 
-exchange.getPriceInUSD = async function newOrder (asset) {
+exchange.getPriceInUSD = async function getPriceInUSD (asset) {
   let binance = new Binance();
   let prices = promisify(binance.prices);
   let usds = [
@@ -99,7 +99,9 @@ exchange.getC8LastPrice = async function getC8LastPrice () { // TODO use exchang
         'market': 'ETH_C8',
       },
   };
-  return (await rp(lastPrice)).last * exchange.getPriceInUSD('ETH');
+  let ticker = await rp(lastPrice);
+  let ethUSD = await exchange.getPriceInUSD('ETH');
+  return ticker.last * ethUSD;
 };
 
 exchange.validateKey = async function validateKey (apiKey, apiSecret) {
