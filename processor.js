@@ -16,7 +16,6 @@ const feeProcessor = require('./models/feeProcessor');
 const socialTrading = require('./models/socialTradingContract');
 
 const onTrade = async function (exchange, leader, trade) {
-  console.log(trade);
   let txHash = utils.tradeTx(exchange.id, trade.id);
   let order = await Order.find(txHash);
   if (order !== undefined) {
@@ -39,7 +38,7 @@ const onTrade = async function (exchange, leader, trade) {
       amountLeft: trade.quantity,
       orderHash: order.orderHash,
       txHash: order.orderHash,
-      leaderTxhash: order.leaderTxHash,
+      leaderTxHash: order.leaderTxHash,
       cost: costUsd,
     };
     if (trade.side === 'BUY') {

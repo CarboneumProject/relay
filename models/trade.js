@@ -53,7 +53,7 @@ trade.insertNewTrade = async function insertNewTrade (trade) {
     trade.amountLeft,
     trade.orderHash,
     trade.txHash,
-    trade.leaderTxhash,
+    trade.leaderTxHash,
     trade.cost,
   ]);
 };
