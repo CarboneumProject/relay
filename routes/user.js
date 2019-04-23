@@ -37,7 +37,7 @@ router.post('/register', async (req, res, next) => {
   }
 });
 
-router.get('/balances', async (req, res, next) => {
+router.get('/balance', async (req, res, next) => {
   try {
     const exchange = req.query.exchange;
     const address = req.query.address.toLowerCase();
@@ -47,8 +47,8 @@ router.get('/balances', async (req, res, next) => {
       res.status(404);
       return res.send({ 'status': 'no', 'message': 'Wallet not found' });
     }
-    let balances = await exchangeModel.balances(crypt.decrypt(userDetail.apiKey), crypt.decrypt(userDetail.apiSecret));
-    res.send(balances);
+    let balance = await exchangeModel.balance(crypt.decrypt(userDetail.apiKey), crypt.decrypt(userDetail.apiSecret));
+    res.send(balance);
   } catch (e) {
     console.error(e);
     res.status(500);

@@ -124,7 +124,7 @@ exchange.validateKey = async function validateKey (apiKey, apiSecret) {
   }
 };
 
-exchange.balances = async function balances (apiKey, apiSecret) {
+exchange.balance = async function balance (apiKey, apiSecret) {
   try {
     let binance = new Binance();
     binance.options({
@@ -134,12 +134,12 @@ exchange.balances = async function balances (apiKey, apiSecret) {
     });
     let balance = promisify(binance.balance);
     let balances = await balance();
-    let out = {};
+    let balanceNoZero = {};
     for (let coin in balances) {
       if (balances.hasOwnProperty(coin)) {
         let all = parseFloat(balances[coin].available) + parseFloat(balances[coin].onOrder);
         if (all > 0.0) {
-          out[coin] = {
+          balanceNoZero[coin] = {
             available: balances[coin].available,
             onOrder: balances[coin].onOrder,
             valueUSD: ((await exchange.getPriceInUSD(coin)) * all).toFixed(8),
@@ -147,7 +147,7 @@ exchange.balances = async function balances (apiKey, apiSecret) {
         }
       }
     }
-    return out;
+    return balanceNoZero;
   } catch (e) {
     if ('message' in e) {
       return e.message;
