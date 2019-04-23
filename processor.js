@@ -106,8 +106,13 @@ const onTrade = async function (exchange, leader, trade) {
               msg += '\nFollowing your leader, your order is placing.';
               push.sendMsgToUser(follower, title, msg);
             } catch (e) {
-              console.log(e);
-              msg += `\nYour balance of ${asset} in your ${exchange.name.toUpperCase()} account is not enough.`;
+              let errMsg = '';
+              if ('message' in e) {
+                errMsg += e.message;
+              } else {
+                errMsg += JSON.parse(e.body).msg;
+              }
+              msg += `\n${exchange.name.toUpperCase()} ${errMsg}`;
               push.sendMsgToUser(follower, title, msg);
             }
           } else {
