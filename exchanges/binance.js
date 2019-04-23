@@ -1,5 +1,6 @@
 const { promisify } = require('es6-promisify');
 const Binance = require('node-binance-api');
+const BigNumber = require('bignumber.js');
 const rp = require('request-promise');
 const exchange = {};
 exchange.id = '0xb17a7ce00000000000000';
@@ -101,7 +102,7 @@ exchange.getC8LastPrice = async function getC8LastPrice () { // TODO use exchang
   };
   let ticker = await rp(lastPrice);
   let ethUSD = await exchange.getPriceInUSD('ETH');
-  return ticker.last * ethUSD;
+  return new BigNumber((ticker.last * ethUSD).toFixed(8));
 };
 
 exchange.validateKey = async function validateKey (apiKey, apiSecret) {
