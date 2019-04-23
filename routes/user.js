@@ -41,8 +41,20 @@ router.get('/balance', async (req, res, next) => {
   try {
     const exchange = req.query.exchange;
     const address = req.query.address.toLowerCase();
+    const signature = req.query.signature;
     const exchangeModel = require(`../exchanges/${exchange}`);
-    let userDetail = await User.findLeader(address, exchange, 'leader');
+    let userDetail;
+    if (signature !== undefined) {
+      const addressSigner = validateSignature(signature);
+      if (addressSigner === address) {
+        userDetail = await User.find(address, exchange);
+      } else {
+        res.status(400);
+        return res.send({ 'status': 'no', 'message': 'Invalid signature.' });
+      }
+    } else {
+      userDetail = await User.findLeader(address, exchange);
+    }
     if (userDetail === undefined) {
       res.status(404);
       return res.send({ 'status': 'no', 'message': 'Wallet not found' });
