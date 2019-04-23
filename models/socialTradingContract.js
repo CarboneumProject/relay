@@ -15,7 +15,6 @@ const contractAddress = network.socialtrading;
 const socialTrading = {};
 
 socialTrading.distributeRewardAll = async function (rewards) {
-  console.log(rewards);
   const provider = infuraProvider(process.env.NETWORK || network.name);
   let w3 = new Web3(provider);
   let socialTradingContract = new w3.eth.Contract(
