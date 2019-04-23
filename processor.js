@@ -85,7 +85,7 @@ const onTrade = async function (exchange, leader, trade) {
       if (followDict !== null) {
         await Object.keys(followDict).forEach(async function (follower) {
           let user = await User.find(follower, exchange.name);
-          if (user !== null) {
+          if (user !== undefined) {
             let exchangeInfo = await exchange.listAllSymbol();
             let asset = exchangeInfo[trade.symbol].baseAsset;
             let base = exchangeInfo[trade.symbol].quoteAsset;

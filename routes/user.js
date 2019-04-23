@@ -40,19 +40,12 @@ router.post('/register', async (req, res, next) => {
 router.get('/balances', async (req, res, next) => {
   try {
     const exchange = req.query.exchange;
-    const wallet = req.query.wallet;
-    const user = req.query.user;
-    const signature = req.query.signature;
-    const addressSigner = validateSignature(signature);
-    if (addressSigner !== user.toLowerCase()) {
-      res.status(400);
-      return res.send({ 'status': 'no', 'message': 'Invalid signature.' });
-    }
+    const address = req.query.address.toLowerCase();
     const exchangeModel = require(`../exchanges/${exchange}`);
-    let userDetail = await User.find(wallet, exchange);
-    if (userDetail === null) {
-      res.status(400);
-      return res.send({ 'status': 'no', 'message': 'Invalid signature.' });
+    let userDetail = await User.findLeader(address, exchange, 'leader');
+    if (userDetail === undefined) {
+      res.status(404);
+      return res.send({ 'status': 'no', 'message': 'Wallet not found' });
     }
     let balances = await exchangeModel.balances(crypt.decrypt(userDetail.apiKey), crypt.decrypt(userDetail.apiSecret));
     res.send(balances);

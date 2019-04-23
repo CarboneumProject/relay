@@ -34,6 +34,16 @@ user.find = async function find (address, exchange) {
   `, [address, exchange]))[0];
 };
 
+user.findLeader = async function find (address, exchange) {
+  return (await mysql.query(`
+      SELECT *
+      FROM carboneum.user
+      WHERE address = ?
+        AND exchange = ?
+        AND type = 'leader'
+  `, [address, exchange]))[0];
+};
+
 user.findAllInExchange = async function findAllInExchange (exchange) {
   return mysql.query(`
       SELECT *
