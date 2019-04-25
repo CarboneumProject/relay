@@ -60,7 +60,12 @@ router.get('/balance', async (req, res, next) => {
       return res.send({ 'status': 'no', 'message': 'Wallet not found' });
     }
     let balance = await exchangeModel.balance(crypt.decrypt(userDetail.apiKey), crypt.decrypt(userDetail.apiSecret));
-    res.send(balance);
+    if (typeof balance === 'string') {
+      res.status(403);
+      return res.send({ 'status': 'no', 'message': balance });
+    } else {
+      res.send(balance);
+    }
   } catch (e) {
     console.error(e);
     res.status(500);
