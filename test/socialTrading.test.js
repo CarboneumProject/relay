@@ -4,7 +4,6 @@ const BigNumber = require('bignumber.js');
 
 describe('Distribute reward', function () {
   it('it should able to distribute reward once', async function () {
-    this.timeout(120000);
     let processedFees = [{
       C8FEE: new BigNumber('8000000000000000000'),
       leader: '0x919cbf1468b535e517e2dc75adc224cbca9e6e2f',
@@ -19,5 +18,5 @@ describe('Distribute reward', function () {
       ],
     }];
     await socialTradingContract.distributeRewardAll(processedFees);
-  });
+  }, 120000);
 });

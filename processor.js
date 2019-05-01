@@ -20,10 +20,7 @@ const onTrade = async function (exchange, leader, trade) {
   let order = await Order.find(txHash);
   if (order !== undefined) {
     // Trade from this relay.
-    let exchangeInfo = await exchange.listAllSymbol();
-    let asset = exchangeInfo[trade.symbol].baseAsset;
-    let base = exchangeInfo[trade.symbol].quoteAsset;
-    let precision = exchangeInfo[trade.symbol].baseAssetPrecision;
+    let { asset, base, precision } = await exchange.getAssetsBySymbol(trade.symbol);
     let assetPrice = await exchange.getPriceInUSD(asset);
     let costBase = (trade.price * trade.quantity).toFixed(precision);
     let costUsd = (assetPrice * trade.quantity).toFixed(precision);
@@ -86,10 +83,8 @@ const onTrade = async function (exchange, leader, trade) {
         await Object.keys(followDict).forEach(async function (follower) {
           let user = await User.find(follower, exchange.name);
           if (user !== undefined) {
-            let exchangeInfo = await exchange.listAllSymbol();
-            let asset = exchangeInfo[trade.symbol].baseAsset;
-            let base = exchangeInfo[trade.symbol].quoteAsset;
-            let baseAmount = utils.decimalFormat(8, trade.quantity * trade.price * Math.pow(10, 8));
+            let { asset, base, precision } = await exchange.getAssetsBySymbol(trade.symbol);
+            let baseAmount = utils.decimalFormat(precision, trade.quantity * trade.price * Math.pow(10, precision));
             let msg = `Order: ${trade.side} ${trade.quantity} ${asset} by ${baseAmount} ${base}`;
             let title = 'Leader Transaction';
             try {

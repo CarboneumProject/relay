@@ -30,6 +30,14 @@ exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callb
   });
 };
 
+exchange.getAssetsBySymbol = async function getAssetsBySymbol (symbol) {
+  let exchangeInfo = await exchange.listAllSymbol();
+  let asset = exchangeInfo[symbol].baseAsset;
+  let base = exchangeInfo[symbol].quoteAsset;
+  let precision = exchangeInfo[symbol].baseAssetPrecision;
+  return { asset: asset, base: base, precision: precision };
+};
+
 exchange.listAllSymbol = async function listAllSymbol () {
   if (exchange.info === undefined) {
     let binance = new Binance();
@@ -60,35 +68,39 @@ exchange.newOrder = async function newOrder (apiKey, apiSecret, order) {
 };
 
 exchange.getPriceInUSD = async function getPriceInUSD (asset) {
-  let binance = new Binance();
-  let prices = promisify(binance.prices);
-  let usds = [
-    'USDT',
-    'PAX',
-    'TUSD',
-    'USDC',
-    'USDS',
-  ];
-
-  // USD base at same price.
-  if (usds.includes(asset)) {
-    return 1.0;
-  }
-
-  // Use USDT base first if available.
   try {
-    let usdPair = `${asset}${usds[0]}`;
-    let price = await prices(usdPair);
-    return price[usdPair];
-  } catch (e) {
-    // console.log(e.body);
-  }
+    let binance = new Binance();
+    let prices = promisify(binance.prices);
+    let usds = [
+      'USDT',
+      'PAX',
+      'TUSD',
+      'USDC',
+      'USDS',
+    ];
 
-  // Converse from BTC pair.
-  let priceBTCUSCT = await prices('BTCUSDT');
-  let priceASSETBTC = await prices(`${asset}BTC`);
-  let price = priceBTCUSCT.BTCUSDT * priceASSETBTC[`${asset}BTC`];
-  return price;
+    // USD base at same price.
+    if (usds.includes(asset)) {
+      return 1.0;
+    }
+
+    // Use USDT base first if available.
+    try {
+      let usdPair = `${asset}${usds[0]}`;
+      let price = await prices(usdPair);
+      return price[usdPair];
+    } catch (e) {
+      // console.log(e.body);
+    }
+
+    // Converse from BTC pair.
+    let priceBTCUSCT = await prices('BTCUSDT');
+    let priceASSETBTC = await prices(`${asset}BTC`);
+    let price = priceBTCUSCT.BTCUSDT * priceASSETBTC[`${asset}BTC`];
+    return price;
+  } catch (e) {
+    return null;
+  }
 };
 
 exchange.getC8LastPrice = async function getC8LastPrice () { // TODO use exchange's C8 price when it listed.

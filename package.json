@@ -13,9 +13,10 @@
     "eslint-plugin-node": "^5.2.1",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
+    "jest": "latest",
     "mocha": "^6.0.2",
-    "supertest": "latest",
-    "jest": "latest"
+    "nano-cache": "^1.1.2",
+    "supertest": "latest"
   },
   "dependencies": {
     "0x.js": "2.0.6",
