@@ -45,4 +45,25 @@ describe('BinanceDEX', function () {
     let price = await BinanceDEX.getPriceInUSD('MITH-C76');
     price.should.be.gte(0.001);
   });
+
+  it('should validate key with valid key', async function () {
+    const address = 'bnb1mmyc83hawwrstjguank3aetkxp4l5lu22m2ms2';
+    const mnemonic = 'gadget bamboo impose gloom tower video brush middle sight switch sting pipe enable castle eagle skull rich clump fiction phone aware small finish melody'; // eslint-disable-line
+    let error = await BinanceDEX.validateKey(address, mnemonic);
+    // eslint-disable-next-line no-unused-expressions
+    error.should.be.false;
+  });
+
+  it('should create new order', async function () {
+    const address = 'bnb1mmyc83hawwrstjguank3aetkxp4l5lu22m2ms2';
+    const mnemonic = 'gadget bamboo impose gloom tower video brush middle sight switch sting pipe enable castle eagle skull rich clump fiction phone aware small finish melody'; // eslint-disable-line
+    const order = {
+      symbol: 'NOW-E68_BNB',
+      side: 'BUY',
+      price: '0.000500',
+      quantity: '8',
+    };
+    let res = await BinanceDEX.newOrder(address, mnemonic, order);
+    console.log(res);
+  });
 });

@@ -1,15 +1,27 @@
 const rp = require('request-promise');
 const NanoCache = require('nano-cache');
 const WebSocket = require('ws');
+const BnbApiClient = require('@binance-chain/javascript-sdk');
 const binance = require('./binance');
+
 const exchange = {};
 exchange.id = '0xb17a7ce0dec00000000000';
 exchange.name = 'binance_dex';
 exchange.info = undefined;
 
+const mainnet = true;
+let baseURL = 'https://dex.binance.org/'; /// api string
+let baseURLWS = 'wss://dex.binance.org/api/ws/';
+let prefix = 'bnb';
+if (!mainnet) {
+  baseURL = 'https://testnet-dex.binance.org/'; /// api string
+  baseURLWS = 'wss://testnet-dex.binance.org/api/ws/';
+  prefix = 'tbnb';
+}
+
 exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callback) {
   function connect () {
-    const conn = new WebSocket('wss://dex.binance.org/api/ws/' + apiKey);
+    const conn = new WebSocket(baseURLWS + apiKey);
     conn.onmessage = onEvent;
     conn.onerror = onError;
     conn.onclose = connect; // Reconnect
@@ -50,13 +62,48 @@ exchange.getAssetsBySymbol = async function getAssetsBySymbol (symbol) {
 };
 
 exchange.newOrder = async function newOrder (apiKey, apiSecret, order) {
-  // TODO sign and send order.
+  let privateKey = getPrivateKey(apiSecret);
+  const addressFrom = BnbApiClient.crypto.getAddressFromPrivateKey(privateKey, prefix);
+  const bnbClient = new BnbApiClient(baseURL);
+  bnbClient.setPrivateKey(privateKey);
+  bnbClient.initChain();
+
+  let side = 0; // (1-Buy, 2-Sell)
+  if (order.side === 'BUY') {
+    side = 1;
+  } else if (order.side === 'SELL') {
+    side = 2;
+  }
+  const request = {
+    method: 'GET',
+    url: `${baseURL}api/v1/account/${addressFrom}/sequence`,
+    transform: function (body, response, resolveWithFullResponse) {
+      return JSON.parse(body);// Manual Transform Content-Type: application/json;charset=UTF-8
+    },
+  };
+  const sequence = (await rp(request)).sequence;
+  const timeInForce = 1; // GTC(Good Till Expire)
+  const result = await bnbClient.placeOrder(
+    addressFrom,
+    order.symbol,
+    side,
+    order.price,
+    order.quantity,
+    sequence,
+    timeInForce,
+  );
+  if (result.status === 200) {
+    console.log('success', result.result[0].hash);
+  } else {
+    console.error('error', result);
+    throw new Error(result);
+  }
 };
 
 exchange.getPriceInUSD = async function getPriceInUSD (asset) {
   const request = {
     method: 'GET',
-    url: 'https://dex.binance.org/api/v1/ticker/24hr',
+    url: `${baseURL}api/v1/ticker/24hr`,
     transform: function (body, response, resolveWithFullResponse) {
       return JSON.parse(body);// Manual Transform Content-Type: application/json;charset=UTF-8
     },
@@ -87,7 +134,9 @@ exchange.getC8LastPrice = async function getC8LastPrice () { // TODO use exchang
 };
 
 exchange.validateKey = async function validateKey (apiKey, apiSecret) {
-  return false;
+  const addressFrom = BnbApiClient.crypto.getAddressFromPrivateKey(getPrivateKey(apiSecret), prefix);
+  let error = addressFrom !== apiKey;
+  return error;
 };
 
 exchange.balance = async function balance (apiKey, apiSecret) {
@@ -95,7 +144,7 @@ exchange.balance = async function balance (apiKey, apiSecret) {
     let address = apiKey;
     const request = {
       method: 'GET',
-      url: `https://dex.binance.org/api/v1/account/${address}`,
+      url: `${baseURL}api/v1/account/${address}`,
       transform: function (body, response, resolveWithFullResponse) {
         return JSON.parse(body);// Manual Transform Content-Type: application/json;charset=UTF-8
       },
@@ -119,5 +168,15 @@ exchange.balance = async function balance (apiKey, apiSecret) {
     return JSON.parse(e.body).msg;
   }
 };
+
+function getPrivateKey (apiSecret) {
+  let words = apiSecret.split(' ');
+  const mnemonicWords = 24;
+  let privateKey = apiSecret;
+  if (words.length === mnemonicWords) {
+    privateKey = BnbApiClient.crypto.getPrivateKeyFromMnemonic(apiSecret); // From mneomnic
+  }
+  return privateKey;
+}
 
 module.exports = exchange;

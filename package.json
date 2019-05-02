@@ -23,6 +23,7 @@
     "@0xproject/connect": "^2.0.0",
     "@0xproject/json-schemas": "^1.0.1",
     "@babel/runtime": "^7.3.1",
+    "@binance-chain/javascript-sdk": "^2.10.0",
     "abi-decoder": "^1.2.0",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.24.1",
@@ -39,8 +40,8 @@
     "numeral": "https://github.com/adamwdraper/Numeral-js#0cbdafd7eb828e387e7f500f12123e72fee0923d",
     "redis": "^2.8.0",
     "request-promise": "4.2.2",
-    "web3": "1.0.0-beta.37",
     "truffle-hdwallet-provider": "https://github.com/trufflesuite/truffle-hdwallet-provider",
+    "web3": "1.0.0-beta.37",
     "winston": "^3.1.0"
   },
   "author": "",
