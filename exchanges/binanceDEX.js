@@ -12,9 +12,11 @@ exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callb
     const conn = new WebSocket('wss://dex.binance.org/api/ws/' + apiKey);
     conn.onmessage = onEvent;
     conn.onerror = onError;
+    conn.onclose = connect; // Reconnect
   }
 
   function onEvent (evt) {
+    console.log(evt.data);
     if (evt.stream === 'orders') {
       for (let report of evt.data) {
         if (report.e === 'executionReport' && report.z === report.q) { // Is trade event and all filled.

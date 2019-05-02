@@ -147,7 +147,9 @@ exchange.balance = async function balance (apiKey, apiSecret) {
     });
     let balance = promisify(binance.balance);
     let balances = await balance();
-    let balanceNoZero = {};
+    const balanceNoZero = {};
+    let valuesPromises = [];
+    let coins = [];
     for (let coin in balances) {
       if (balances.hasOwnProperty(coin)) {
         let all = parseFloat(balances[coin].available) + parseFloat(balances[coin].onOrder);
@@ -155,10 +157,17 @@ exchange.balance = async function balance (apiKey, apiSecret) {
           balanceNoZero[coin] = {
             available: balances[coin].available,
             onOrder: balances[coin].onOrder,
-            valueUSD: ((await exchange.getPriceInUSD(coin)) * all).toFixed(8),
+            all: all,
           };
+          coins.push(coin);
+          valuesPromises.push(exchange.getPriceInUSD(coin));
         }
       }
+    }
+    let values = await Promise.all(valuesPromises);
+    for (let i = 0; i < coins.length; i++) {
+      balanceNoZero[coins[i]].valueUSD = (values[i] * balanceNoZero[coins[i]].all).toFixed(8);
+      delete balanceNoZero[coins[i]].all;
     }
     return balanceNoZero;
   } catch (e) {
