@@ -119,7 +119,7 @@ const onTrade = async function (exchange, leader, trade) {
   }
 };
 
-const exchanges = ['binance'];
+const exchanges = ['binance', 'binance_dex'];
 const tradeExchange = [];
 for (let i = 0; i < exchanges.length; i++) {
   tradeExchange.push(require(`./exchanges/${exchanges[i]}`));
