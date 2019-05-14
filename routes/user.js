@@ -24,12 +24,30 @@ router.post('/register', async (req, res, next) => {
       crypt.encrypt(user.apiKey),
       crypt.encrypt(user.apiSecret),
       user.type,
+      user.firstname,
+      user.lastname,
+      user.email,
     );
     const re = res.send({ 'status': 'ok' });
     if (user.type === 'follower') {
       await User.checkAvailableC8(user.address);
     }
     return re;
+  } catch (e) {
+    console.error(e);
+    res.status(500);
+    return res.send({ 'status': 'no', 'message': e.message });
+  }
+});
+
+router.get('/show', async (req, res, next) => {
+  try {
+    const exchange = req.query.exchange;
+    const address = req.query.address.toLowerCase();
+    let userDetail = await User.find(address, exchange);
+    delete userDetail.apiKey;
+    delete userDetail.apiSecret;
+    res.send(userDetail);
   } catch (e) {
     console.error(e);
     res.status(500);

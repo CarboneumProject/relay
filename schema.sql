@@ -93,13 +93,16 @@ create table if not exists trade_log
     taker       varchar(44)                         null
 );
 
-create table if not exists user
+create table user
 (
-    address      varchar(42)                           not null,
-    exchange     varchar(64)                           not null,
-    apiKey       varchar(500)                          null,
-    apiSecret    varchar(500)                          null,
-    registerDate datetime    default CURRENT_TIMESTAMP null,
-    type         varchar(10) default 'follower'        null,
+    address varchar(42) not null,
+    exchange varchar(64) not null,
+    apiKey varchar(500) null,
+    apiSecret varchar(500) null,
+    registerDate datetime default CURRENT_TIMESTAMP null,
+    type varchar(10) default 'follower' null,
+    firstname varchar(200) null,
+    lastname varchar(200) null,
+    email varchar(100) null,
     primary key (address, exchange)
 );
