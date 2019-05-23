@@ -133,7 +133,7 @@ exchange.getC8LastPrice = async function getC8LastPrice () { // TODO use exchang
   return binance.getC8LastPrice();
 };
 
-exchange.validateKey = async function validateKey (apiKey, apiSecret) {
+exchange.validateKey = async function validateKey (apiKey, apiSecret, userType) {
   const addressFrom = BnbApiClient.crypto.getAddressFromPrivateKey(getPrivateKey(apiSecret), prefix);
   let error = addressFrom !== apiKey;
   return error;

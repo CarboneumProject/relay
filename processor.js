@@ -16,6 +16,7 @@ const feeProcessor = require('./models/feeProcessor');
 const socialTrading = require('./models/socialTradingContract');
 
 const onTrade = async function (exchange, leader, trade) {
+  console.log(trade);
   let txHash = utils.tradeTx(exchange.id, trade.id);
   let order = await Order.find(txHash);
   if (order !== undefined) {
@@ -84,11 +85,41 @@ const onTrade = async function (exchange, leader, trade) {
           let user = await User.find(follower, exchange.name);
           if (user !== undefined) {
             let { asset, base, precision } = await exchange.getAssetsBySymbol(trade.symbol);
-            let baseAmount = utils.decimalFormat(precision, trade.quantity * trade.price * Math.pow(10, precision));
-            let msg = `Order: ${trade.side} ${trade.quantity} ${asset} by ${baseAmount} ${base}`;
+            let leaderUser = await User.find(leader, exchange.name);
+            let leaderBalance = await exchange.balance(
+              crypt.decrypt(leaderUser.apiKey),
+              crypt.decrypt(leaderUser.apiSecret),
+            );
+            let followerBalance = await exchange.balance(crypt.decrypt(user.apiKey), crypt.decrypt(user.apiSecret));
+            let followerTrade = { ...trade };
+            if (trade.side === 'SELL') {
+              if (!(asset in followerBalance) || parseFloat(followerBalance[asset].available) === 0) { // No asset
+                return; // Do nothing
+              }
+              let fundFraction = parseFloat(trade.quantity) /
+                (parseFloat(leaderBalance[asset].available) + parseFloat(trade.quantity));
+              followerTrade.quantity = (fundFraction * parseFloat(followerBalance[asset].available)).toFixed(4);
+            } else {
+              if (!(base in followerBalance) || parseFloat(followerBalance[base].available) === 0) { // No asset
+                return; // Do nothing
+              }
+              let cost = parseFloat(trade.quantity) * parseFloat(trade.price);
+              let fundFraction = cost / (cost + parseFloat(leaderBalance[asset].available));
+              let costFollower = fundFraction * parseFloat(followerBalance[base].available);
+              followerTrade.quantity = (costFollower / trade.price).toFixed(4);
+            }
+            let baseAmount = utils.decimalFormat(
+              precision,
+              followerTrade.quantity * followerTrade.price * Math.pow(10, precision),
+            );
             let title = 'Leader Transaction';
+            let msg = `Order: ${followerTrade.side} ${followerTrade.quantity} ${asset} by ${baseAmount} ${base}`;
             try {
-              let order = await exchange.newOrder(crypt.decrypt(user.apiKey), crypt.decrypt(user.apiSecret), trade);
+              let order = await exchange.newOrder(
+                crypt.decrypt(user.apiKey),
+                crypt.decrypt(user.apiSecret),
+                followerTrade,
+              );
               let orderHash = utils.tradeTx(exchange.id, order.orderId);
               let copyOrder = {
                 leader: leader,
@@ -119,7 +150,7 @@ const onTrade = async function (exchange, leader, trade) {
   }
 };
 
-const exchanges = ['binance', 'binance_dex'];
+const exchanges = ['binance', 'binanceDEX'];
 const tradeExchange = [];
 for (let i = 0; i < exchanges.length; i++) {
   tradeExchange.push(require(`./exchanges/${exchanges[i]}`));

@@ -117,7 +117,7 @@ exchange.getC8LastPrice = async function getC8LastPrice () { // TODO use exchang
   return new BigNumber((ticker.last * ethUSD).toFixed(8));
 };
 
-exchange.validateKey = async function validateKey (apiKey, apiSecret) {
+exchange.validateKey = async function validateKey (apiKey, apiSecret, userType) {
   try {
     let binance = new Binance();
     binance.options({
@@ -126,9 +126,15 @@ exchange.validateKey = async function validateKey (apiKey, apiSecret) {
       useServerTime: true,
       test: true, // TEST CAN TRADE
     });
-    let order = promisify(binance.order);
-    await order('BUY', 'ETHBTC', 0.04600000, 0.032821, {});
-    return false;
+    if (userType === 'leader') {
+      let balance = promisify(binance.balance);
+      await balance();
+      return false;
+    } else {
+      let order = promisify(binance.order);
+      await order('BUY', 'ETHBTC', 0.04600000, 0.032821, {});
+      return false;
+    }
   } catch (e) {
     if ('message' in e) {
       return e.message;

@@ -13,7 +13,7 @@ router.post('/register', async (req, res, next) => {
       return res.send({ 'status': 'no', 'message': 'Invalid signature.' });
     }
     const exchange = require(`../exchanges/${user.exchange}`);
-    let error = await exchange.validateKey(user.apiKey, user.apiSecret);
+    let error = await exchange.validateKey(user.apiKey, user.apiSecret, user.type);
     if (error) {
       res.status(400);
       return res.send({ 'status': 'no', 'message': error });
