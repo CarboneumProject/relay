@@ -28,8 +28,7 @@ router.post('/register', async (req, res, next) => {
       crypt.encrypt(user.apiKey),
       crypt.encrypt(user.apiSecret),
       user.type,
-      user.firstname,
-      user.lastname,
+      user.fullname,
       user.email,
     );
     const re = res.send({ 'status': 'ok' });

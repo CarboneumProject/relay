@@ -101,8 +101,7 @@ create table user
     apiSecret varchar(500) null,
     registerDate datetime default CURRENT_TIMESTAMP null,
     type varchar(10) default 'follower' null,
-    firstname varchar(200) null,
-    lastname varchar(200) null,
+    fullname varchar(200) null,
     email varchar(100) null,
     primary key (address, exchange)
 );
