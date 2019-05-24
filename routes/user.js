@@ -61,10 +61,10 @@ router.get('/show', async (req, res, next) => {
     let hgetall = util.promisify(client.hgetall).bind(client);
     let fw = await hgetall('leader:' + address);
     if (fw === null) {
-      userDetail.followers = 0;
+      userDetail.follower = '0';
     } else {
       let followers = await User.findAllFollowInExchange(exchange, Object.keys(fw));
-      userDetail.followers = followers.length;
+      userDetail.follower = (followers.length).toFixed(0);
     }
     delete userDetail.apiKey;
     delete userDetail.apiSecret;
