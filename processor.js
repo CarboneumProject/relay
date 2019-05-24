@@ -16,7 +16,6 @@ const feeProcessor = require('./models/feeProcessor');
 const socialTrading = require('./models/socialTradingContract');
 
 const onTrade = async function (exchange, leader, trade) {
-  console.log(trade);
   let txHash = utils.tradeTx(exchange.id, trade.id);
   let order = await Order.find(txHash);
   if (order !== undefined) {
@@ -84,7 +83,7 @@ const onTrade = async function (exchange, leader, trade) {
         await Object.keys(followDict).forEach(async function (follower) {
           let user = await User.find(follower, exchange.name);
           if (user !== undefined) {
-            let { asset, base, precision } = await exchange.getAssetsBySymbol(trade.symbol);
+            let { asset, base, precision, stepSize } = await exchange.getAssetsBySymbol(trade.symbol);
             let leaderUser = await User.find(leader, exchange.name);
             let leaderBalance = await exchange.balance(
               crypt.decrypt(leaderUser.apiKey),
@@ -98,16 +97,18 @@ const onTrade = async function (exchange, leader, trade) {
               }
               let fundFraction = parseFloat(trade.quantity) /
                 (parseFloat(leaderBalance[asset].available) + parseFloat(trade.quantity));
-              followerTrade.quantity = (fundFraction * parseFloat(followerBalance[asset].available)).toFixed(4);
+              followerTrade.quantity = fundFraction * parseFloat(followerBalance[asset].available);
             } else {
               if (!(base in followerBalance) || parseFloat(followerBalance[base].available) === 0) { // No asset
                 return; // Do nothing
               }
               let cost = parseFloat(trade.quantity) * parseFloat(trade.price);
-              let fundFraction = cost / (cost + parseFloat(leaderBalance[asset].available));
+              let fundFraction = cost / (cost + parseFloat(leaderBalance[base].available));
               let costFollower = fundFraction * parseFloat(followerBalance[base].available);
-              followerTrade.quantity = (costFollower / trade.price).toFixed(4);
+              followerTrade.quantity = (costFollower / trade.price);
             }
+            // Adjust quantity step for exchange.
+            followerTrade.quantity = (followerTrade.quantity - (followerTrade.quantity % stepSize)).toFixed(precision);
             let baseAmount = utils.decimalFormat(
               precision,
               followerTrade.quantity * followerTrade.price * Math.pow(10, precision),
