@@ -54,6 +54,14 @@ user.findAllInExchange = async function findAllInExchange (exchange) {
   `, [exchange]);
 };
 
+user.findAllFollowInExchange = async function findAllFollowInExchange (exchange, followers) {
+  return mysql.query(`
+      SELECT *
+      FROM carboneum.user
+      WHERE exchange = ? AND address IN (?)
+  `, [exchange, followers]);
+};
+
 user.availableC8 = async function availableC8 (address) {
   let provider = infuraProvider(process.env.NETWORK || network.name);
   let allowance = await erc20.allowance(

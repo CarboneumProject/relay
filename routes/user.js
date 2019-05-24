@@ -3,6 +3,12 @@ const validateSignature = require('../models/validate-signature');
 const crypt = require('../models/crypt');
 const User = require('../models/user');
 const router = express.Router();
+const redis = require('redis');
+const client = redis.createClient();
+const config = require('../config');
+const network = config.getNetwork();
+client.select(network.redisDB);
+const util = require('util');
 
 router.post('/register', async (req, res, next) => {
   try {
@@ -48,6 +54,18 @@ router.get('/show', async (req, res, next) => {
     const exchange = req.query.exchange;
     const address = req.query.address.toLowerCase();
     let userDetail = await User.find(address, exchange);
+    if (userDetail === undefined) {
+      res.status(404);
+      return res.send({ 'status': 'no', 'message': 'User not found' });
+    }
+    let hgetall = util.promisify(client.hgetall).bind(client);
+    let fw = await hgetall('leader:' + address);
+    if (fw === null) {
+      userDetail.followers = 0;
+    } else {
+      let followers = await User.findAllFollowInExchange(exchange, Object.keys(fw));
+      userDetail.followers = followers.length;
+    }
     delete userDetail.apiKey;
     delete userDetail.apiSecret;
     res.send(userDetail);
