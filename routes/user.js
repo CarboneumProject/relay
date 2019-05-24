@@ -36,6 +36,7 @@ router.post('/register', async (req, res, next) => {
       user.type,
       user.fullname,
       user.email,
+      user.asset,
     );
     const re = res.send({ 'status': 'ok' });
     if (user.type === 'follower') {
