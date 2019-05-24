@@ -12,6 +12,10 @@ router.post('/register', async (req, res, next) => {
       res.status(400);
       return res.send({ 'status': 'no', 'message': 'Invalid signature.' });
     }
+    if (!('type' in user) || (user.type !== 'follower' && user.type !== 'leader')) {
+      res.status(400);
+      return res.send({ 'status': 'no', 'message': 'Invalid user type.' });
+    }
     const exchange = require(`../exchanges/${user.exchange}`);
     let error = await exchange.validateKey(user.apiKey, user.apiSecret, user.type);
     if (error) {
