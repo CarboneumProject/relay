@@ -58,7 +58,7 @@ exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callb
 exchange.getAssetsBySymbol = async function getAssetsBySymbol (symbol) {
   let assets = symbol.split('_');
   const DEX_PRECISION = 8;
-  return { asset: assets[0], base: assets[1], precision: DEX_PRECISION, stepSize: 0.00000001 };
+  return { asset: assets[0], base: assets[1], precision: DEX_PRECISION, stepSize: 0.00000001, minNotional: 0 };
 };
 
 exchange.newOrder = async function newOrder (apiKey, apiSecret, order) {

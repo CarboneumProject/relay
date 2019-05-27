@@ -83,7 +83,7 @@ const onTrade = async function (exchange, leader, trade) {
         await Object.keys(followDict).forEach(async function (follower) {
           let user = await User.find(follower, exchange.name);
           if (user !== undefined) {
-            let { asset, base, precision, stepSize } = await exchange.getAssetsBySymbol(trade.symbol);
+            let { asset, base, precision, stepSize, minNotional } = await exchange.getAssetsBySymbol(trade.symbol);
             let leaderUser = await User.find(leader, exchange.name);
             let leaderBalance = await exchange.balance(
               crypt.decrypt(leaderUser.apiKey),
@@ -152,6 +152,9 @@ const onTrade = async function (exchange, leader, trade) {
                 errMsg += e.message;
               } else {
                 errMsg += JSON.parse(e.body).msg;
+              }
+              if (errMsg === 'Filter failure: MIN_NOTIONAL') {
+                errMsg = `Order failed: Total value must be at least ${minNotional.toFixed(precision - 4)} ${base}`;
               }
               msg += `\n${errMsg}`;
               push.sendMsgToUser(follower, title, msg);

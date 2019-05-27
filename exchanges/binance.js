@@ -36,12 +36,16 @@ exchange.getAssetsBySymbol = async function getAssetsBySymbol (symbol) {
   let base = exchangeInfo[symbol].quoteAsset;
   let precision = exchangeInfo[symbol].baseAssetPrecision;
   let stepSize = 0;
+  let minNotional = 0;
   for (let f of exchangeInfo[symbol].filters) {
     if (f.filterType === 'LOT_SIZE') {
       stepSize = parseFloat(f.stepSize);
     }
+    if (f.filterType === 'MIN_NOTIONAL') {
+      minNotional = parseFloat(f.minNotional);
+    }
   }
-  return { asset: asset, base: base, precision: precision, stepSize: stepSize };
+  return { asset: asset, base: base, precision: precision, stepSize: stepSize, minNotional: minNotional };
 };
 
 exchange.listAllSymbol = async function listAllSymbol () {
