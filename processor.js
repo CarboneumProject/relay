@@ -118,7 +118,7 @@ const onTrade = async function (exchange, leader, trade) {
               precision, followerTrade.price * Math.pow(10, precision),
             )} ${base}\n`;
             if (isNaN(followerTrade.quantity)) {
-              msg += `Your Order: Not enough ${tradeAsset} available`;
+              msg += `Not enough ${tradeAsset} available`;
               push.sendMsgToUser(follower, title, msg);
               return;
             }
@@ -152,6 +152,9 @@ const onTrade = async function (exchange, leader, trade) {
                 errMsg += e.message;
               } else {
                 errMsg += JSON.parse(e.body).msg;
+              }
+              if (errMsg === 'Filter failure: MIN_NOTIONAL') {
+                errMsg = `Not enough ${tradeAsset} available`;
               }
               msg += `\n${errMsg}`;
               push.sendMsgToUser(follower, title, msg);
