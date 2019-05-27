@@ -91,30 +91,38 @@ const onTrade = async function (exchange, leader, trade) {
             );
             let followerBalance = await exchange.balance(crypt.decrypt(user.apiKey), crypt.decrypt(user.apiSecret));
             let followerTrade = { ...trade };
+            let tradeAsset = asset;
             if (trade.side === 'SELL') {
-              if (!(asset in followerBalance) || parseFloat(followerBalance[asset].available) === 0) { // No asset
-                return; // Do nothing
+              tradeAsset = asset;
+              if (!(tradeAsset in followerBalance) || parseFloat(followerBalance[tradeAsset].available) === 0) {
+                followerTrade.quantity = NaN;
+              } else {
+                let fundFraction = parseFloat(trade.quantity) /
+                  (parseFloat(leaderBalance[asset].available) + parseFloat(trade.quantity));
+                followerTrade.quantity = fundFraction * parseFloat(followerBalance[asset].available);
               }
-              let fundFraction = parseFloat(trade.quantity) /
-                (parseFloat(leaderBalance[asset].available) + parseFloat(trade.quantity));
-              followerTrade.quantity = fundFraction * parseFloat(followerBalance[asset].available);
             } else {
-              if (!(base in followerBalance) || parseFloat(followerBalance[base].available) === 0) { // No asset
-                return; // Do nothing
+              tradeAsset = base;
+              if (!(tradeAsset in followerBalance) || parseFloat(followerBalance[tradeAsset].available) === 0) {
+                followerTrade.quantity = NaN;
+              } else {
+                let cost = parseFloat(trade.quantity) * parseFloat(trade.price);
+                let fundFraction = cost / (cost + parseFloat(leaderBalance[tradeAsset].available));
+                let costFollower = fundFraction * parseFloat(followerBalance[tradeAsset].available);
+                followerTrade.quantity = (costFollower / trade.price);
               }
-              let cost = parseFloat(trade.quantity) * parseFloat(trade.price);
-              let fundFraction = cost / (cost + parseFloat(leaderBalance[base].available));
-              let costFollower = fundFraction * parseFloat(followerBalance[base].available);
-              followerTrade.quantity = (costFollower / trade.price);
+            }
+            let title = `Leader Transaction @ ${exchange.name.toUpperCase()}`;
+            let msg = '';
+            msg += `Leader Order: ${trade.side} ${trade.quantity} ${asset} Price ${trade.price} ${base}\n`;
+            if (isNaN(followerTrade.quantity)) {
+              msg += `Your Order: Not enough ${tradeAsset} available (${followerBalance[tradeAsset].available} )`;
+              push.sendMsgToUser(follower, title, msg);
+              return;
             }
             // Adjust quantity step for exchange.
             followerTrade.quantity = (followerTrade.quantity - (followerTrade.quantity % stepSize)).toFixed(precision);
-            let baseAmount = utils.decimalFormat(
-              precision,
-              followerTrade.quantity * followerTrade.price * Math.pow(10, precision),
-            );
-            let title = 'Leader Transaction';
-            let msg = `Order: ${followerTrade.side} ${followerTrade.quantity} ${asset} by ${baseAmount} ${base}`;
+            msg += `Your Order: ${followerTrade.side} ${followerTrade.quantity} ${asset} price ${trade.price} ${base}`;
             try {
               let order = await exchange.newOrder(
                 crypt.decrypt(user.apiKey),
@@ -139,7 +147,7 @@ const onTrade = async function (exchange, leader, trade) {
               } else {
                 errMsg += JSON.parse(e.body).msg;
               }
-              msg += `\n${exchange.name.toUpperCase()} ${errMsg}`;
+              msg += `\n${errMsg}`;
               push.sendMsgToUser(follower, title, msg);
             }
           } else {
