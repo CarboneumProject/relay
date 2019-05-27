@@ -116,13 +116,17 @@ const onTrade = async function (exchange, leader, trade) {
             let msg = '';
             msg += `Leader Order: ${trade.side} ${trade.quantity} ${asset} Price ${trade.price} ${base}\n`;
             if (isNaN(followerTrade.quantity)) {
-              msg += `Your Order: Not enough ${tradeAsset} available (${followerBalance[tradeAsset].available} )`;
+              msg += `Your Order: Not enough ${tradeAsset} available`;
               push.sendMsgToUser(follower, title, msg);
               return;
             }
             // Adjust quantity step for exchange.
             followerTrade.quantity = (followerTrade.quantity - (followerTrade.quantity % stepSize)).toFixed(precision);
-            msg += `Your Order: ${followerTrade.side} ${followerTrade.quantity} ${asset} price ${trade.price} ${base}`;
+            let baseAmount = utils.decimalFormat(
+              precision,
+              followerTrade.quantity * followerTrade.price * Math.pow(10, precision),
+            );
+            msg += `Your Order: ${followerTrade.side} ${followerTrade.quantity} ${asset} by ${baseAmount} ${base}`;
             try {
               let order = await exchange.newOrder(
                 crypt.decrypt(user.apiKey),
