@@ -114,7 +114,9 @@ const onTrade = async function (exchange, leader, trade) {
             }
             let title = `Leader Transaction @ ${exchange.name.toUpperCase()}`;
             let msg = '';
-            msg += `Leader Order: ${trade.side} ${trade.quantity} ${asset} Price ${trade.price} ${base}\n`;
+            msg += `Leader Order: ${trade.side} ${trade.quantity} ${asset} Price ${utils.decimalFormat(
+              precision, followerTrade.price * Math.pow(10, precision),
+            )} ${base}\n`;
             if (isNaN(followerTrade.quantity)) {
               msg += `Your Order: Not enough ${tradeAsset} available`;
               push.sendMsgToUser(follower, title, msg);
