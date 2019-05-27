@@ -123,12 +123,12 @@ describe('feeProcessor', function () {
     };
 
     let rewardAndFees = await feeProcessor.percentageFee(openTrades, closeTrade, c8LastPrice);
-    rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
-    rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
+    rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('9400000000000000000'));
+    rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('9400000000000000000'));
     rewardAndFees.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
     rewardAndFees.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
-    rewardAndFees.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4230000000000000000'));
-    rewardAndFees.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('470000000000000000'));
+    rewardAndFees.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
+    rewardAndFees.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
     rewardAndFees.processedFees[0].orderHashes.should.be.same.members(
       [
         '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
@@ -194,12 +194,12 @@ describe('feeProcessor', function () {
     };
 
     let rewardAndFees1 = await feeProcessor.percentageFee(openTrades, closeTrade1, c8LastPrice);
-    rewardAndFees1.sumFee.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
-    rewardAndFees1.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
+    rewardAndFees1.sumFee.should.be.bignumber.equal(new BigNumber('9400000000000000000'));
+    rewardAndFees1.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('9400000000000000000'));
     rewardAndFees1.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
     rewardAndFees1.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
-    rewardAndFees1.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4230000000000000000'));
-    rewardAndFees1.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('470000000000000000'));
+    rewardAndFees1.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
+    rewardAndFees1.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
     rewardAndFees1.processedFees[0].orderHashes.should.be.same.members(
       [
         '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
@@ -215,12 +215,12 @@ describe('feeProcessor', function () {
     openTrades[0].amountLeft = rewardAndFees1.updateAmounts[0].amountLeft;
 
     let rewardAndFees2 = await feeProcessor.percentageFee(openTrades, closeTrade2, c8LastPrice);
-    rewardAndFees2.sumFee.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
-    rewardAndFees2.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
+    rewardAndFees2.sumFee.should.be.bignumber.equal(new BigNumber('9400000000000000000'));
+    rewardAndFees2.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('9400000000000000000'));
     rewardAndFees2.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
     rewardAndFees2.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
-    rewardAndFees2.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4230000000000000000'));
-    rewardAndFees2.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('470000000000000000'));
+    rewardAndFees2.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
+    rewardAndFees2.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
     rewardAndFees2.processedFees[0].orderHashes.should.be.same.members(
       [
         '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
@@ -308,12 +308,12 @@ describe('feeProcessor', function () {
       openTrades[0].amountLeft = rewardAndFees1.updateAmounts[0].amountLeft;
 
       let rewardAndFees2 = await feeProcessor.percentageFee(openTrades, closeTrade2, c8LastPrice);
-      rewardAndFees2.sumFee.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
-      rewardAndFees2.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
+      rewardAndFees2.sumFee.should.be.bignumber.equal(new BigNumber('9400000000000000000'));
+      rewardAndFees2.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('9400000000000000000'));
       rewardAndFees2.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
       rewardAndFees2.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
-      rewardAndFees2.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4230000000000000000'));
-      rewardAndFees2.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('470000000000000000'));
+      rewardAndFees2.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
+      rewardAndFees2.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
       rewardAndFees2.processedFees[0].orderHashes.should.be.same.members(
         [
           '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
@@ -378,12 +378,12 @@ describe('feeProcessor', function () {
     };
 
     let rewardAndFees = await feeProcessor.percentageFee(openTrades, closeTrade, c8LastPrice);
-    rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
-    rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('2350000000000000000'));
+    rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('9400000000000000000'));
+    rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
     rewardAndFees.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
     rewardAndFees.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
-    rewardAndFees.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('2115000000000000000'));
-    rewardAndFees.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('235000000000000000'));
+    rewardAndFees.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('2350000000000000000'));
+    rewardAndFees.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('2350000000000000000'));
     rewardAndFees.processedFees[0].orderHashes.should.be.same.members(
       [
         '0x0000000000000000000000000000000000b17a7ce00000000000000329279739',
@@ -396,11 +396,11 @@ describe('feeProcessor', function () {
     rewardAndFees.updateAmounts[0].amountLeft.should.be.bignumber.equal('0');
     rewardAndFees.updateAmounts[0].orderId.should.be.bignumber.equal(1);
 
-    rewardAndFees.processedFees[1].C8FEE.should.be.bignumber.equal(new BigNumber('2350000000000000000'));
+    rewardAndFees.processedFees[1].C8FEE.should.be.bignumber.equal(new BigNumber('4700000000000000000'));
     rewardAndFees.processedFees[1].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
     rewardAndFees.processedFees[1].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
-    rewardAndFees.processedFees[1].reward.should.be.bignumber.equal(new BigNumber('2115000000000000000'));
-    rewardAndFees.processedFees[1].relayFee.should.be.bignumber.equal(new BigNumber('235000000000000000'));
+    rewardAndFees.processedFees[1].reward.should.be.bignumber.equal(new BigNumber('2350000000000000000'));
+    rewardAndFees.processedFees[1].relayFee.should.be.bignumber.equal(new BigNumber('2350000000000000000'));
     rewardAndFees.processedFees[1].orderHashes.should.be.same.members(
       [
         '0x0000000000000000000000000000000000b17a7ce00000000000000329279749',
@@ -553,7 +553,7 @@ describe('feeProcessor', function () {
       };
 
       let rewardAndFees = await feeProcessor.percentageFee(openTrades, closeTrade, c8LastPrice);
-      rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('1175000000000000000'));
+      rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('2350000000000000000'));
       rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('0'));
       rewardAndFees.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
       rewardAndFees.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
@@ -571,11 +571,11 @@ describe('feeProcessor', function () {
       rewardAndFees.updateAmounts[0].amountLeft.should.be.bignumber.equal('0');
       rewardAndFees.updateAmounts[0].orderId.should.be.bignumber.equal(1);
 
-      rewardAndFees.processedFees[1].C8FEE.should.be.bignumber.equal(new BigNumber('1175000000000000000'));
+      rewardAndFees.processedFees[1].C8FEE.should.be.bignumber.equal(new BigNumber('2350000000000000000'));
       rewardAndFees.processedFees[1].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
       rewardAndFees.processedFees[1].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
-      rewardAndFees.processedFees[1].reward.should.be.bignumber.equal(new BigNumber('1057500000000000000'));
-      rewardAndFees.processedFees[1].relayFee.should.be.bignumber.equal(new BigNumber('117500000000000000'));
+      rewardAndFees.processedFees[1].reward.should.be.bignumber.equal(new BigNumber('1175000000000000000'));
+      rewardAndFees.processedFees[1].relayFee.should.be.bignumber.equal(new BigNumber('1175000000000000000'));
       rewardAndFees.processedFees[1].orderHashes.should.be.same.members(
         [
           '0x0000000000000000000000000000000000b17a7ce00000000000000329279749',
@@ -641,7 +641,7 @@ describe('feeProcessor', function () {
       };
 
       let rewardAndFees = await feeProcessor.percentageFee(openTrades, closeTrade, c8LastPrice);
-      rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('1175000000000000000'));
+      rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('2350000000000000000'));
       rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('0'));
       rewardAndFees.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
       rewardAndFees.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
@@ -659,11 +659,11 @@ describe('feeProcessor', function () {
       rewardAndFees.updateAmounts[0].amountLeft.should.be.bignumber.equal('0');
       rewardAndFees.updateAmounts[0].orderId.should.be.bignumber.equal(1);
 
-      rewardAndFees.processedFees[1].C8FEE.should.be.bignumber.equal(new BigNumber('1175000000000000000'));
+      rewardAndFees.processedFees[1].C8FEE.should.be.bignumber.equal(new BigNumber('2350000000000000000'));
       rewardAndFees.processedFees[1].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
       rewardAndFees.processedFees[1].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
-      rewardAndFees.processedFees[1].reward.should.be.bignumber.equal(new BigNumber('1057500000000000000'));
-      rewardAndFees.processedFees[1].relayFee.should.be.bignumber.equal(new BigNumber('117500000000000000'));
+      rewardAndFees.processedFees[1].reward.should.be.bignumber.equal(new BigNumber('1175000000000000000'));
+      rewardAndFees.processedFees[1].relayFee.should.be.bignumber.equal(new BigNumber('1175000000000000000'));
       rewardAndFees.processedFees[1].orderHashes.should.be.same.members(
         [
           '0x0000000000000000000000000000000000b17a7ce00000000000000329279749',
@@ -677,7 +677,7 @@ describe('feeProcessor', function () {
       rewardAndFees.updateAmounts[1].orderId.should.be.bignumber.equal(2);
     });
 
-  it('should able to calculate fee with no open order at fixed fee.', async function () {
+  it('should able to calculate fee with no open order and no fee.', async function () {
     let openTrades = [];
 
     let closeTrade = {
@@ -697,12 +697,12 @@ describe('feeProcessor', function () {
     };
 
     let rewardAndFees = await feeProcessor.percentageFee(openTrades, closeTrade, c8LastPrice);
-    rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('8000000000000000000'));
-    rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('8000000000000000000'));
+    rewardAndFees.sumFee.should.be.bignumber.equal(new BigNumber('0'));
+    rewardAndFees.processedFees[0].C8FEE.should.be.bignumber.equal(new BigNumber('0'));
     rewardAndFees.processedFees[0].leader.should.be.equal('0x919cbf1468b535e517e2dc75adc224cbca9e6e2f');
     rewardAndFees.processedFees[0].follower.should.be.equal('0xfb38e6973c2d6b33ca0d8d2d10107fa13def920a');
-    rewardAndFees.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('4000000000000000000'));
-    rewardAndFees.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('4000000000000000000'));
+    rewardAndFees.processedFees[0].reward.should.be.bignumber.equal(new BigNumber('0'));
+    rewardAndFees.processedFees[0].relayFee.should.be.bignumber.equal(new BigNumber('0'));
     rewardAndFees.processedFees[0].orderHashes.should.be.same.members(
       [
         '0x',

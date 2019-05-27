@@ -63,16 +63,12 @@ feeProcessor.percentageFee = async function (openTrades, closeTrade, c8LastPrice
       }
     }
   } else {
-    let reward = new BigNumber(network.REWARD);
-    let fee = new BigNumber(network.FEE);
-    let C8FEE = reward.add(fee);
-    sumC8FEE = sumC8FEE.add(C8FEE);
     processedFees.push({
-      'C8FEE': C8FEE,
+      'C8FEE': new BigNumber(0),
       'leader': closeTrade.leader,
       'follower': closeTrade.follower,
-      'reward': network.REWARD,
-      'relayFee': network.FEE,
+      'reward': 0,
+      'relayFee': 0,
       'orderHashes': ['0x',
         closeTrade.leaderTxHash,
         '0x',
