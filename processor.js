@@ -98,8 +98,8 @@ const onTrade = async function (exchange, leader, trade) {
                 followerTrade.quantity = NaN;
               } else {
                 let fundFraction = parseFloat(trade.quantity) /
-                  (parseFloat(leaderBalance[asset].available) + parseFloat(trade.quantity));
-                followerTrade.quantity = fundFraction * parseFloat(followerBalance[asset].available);
+                  (parseFloat(leaderBalance[tradeAsset].available) + parseFloat(trade.quantity));
+                followerTrade.quantity = fundFraction * parseFloat(followerBalance[tradeAsset].available);
               }
             } else {
               tradeAsset = base;
