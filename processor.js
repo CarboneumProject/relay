@@ -153,9 +153,6 @@ const onTrade = async function (exchange, leader, trade) {
               } else {
                 errMsg += JSON.parse(e.body).msg;
               }
-              if (errMsg === 'Filter failure: MIN_NOTIONAL') {
-                errMsg = `Not enough ${tradeAsset} available`;
-              }
               msg += `\n${errMsg}`;
               push.sendMsgToUser(follower, title, msg);
             }
