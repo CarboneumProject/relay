@@ -64,8 +64,7 @@ router.get('/show', async (req, res, next) => {
     if (fw === null) {
       userDetail.follower = '0';
     } else {
-      let followers = await User.findAllFollowInExchange(exchange, Object.keys(fw));
-      userDetail.follower = (followers.length).toFixed(0);
+      userDetail.follower = Object.keys(fw).length;
     }
     delete userDetail.apiKey;
     delete userDetail.apiSecret;
