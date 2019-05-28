@@ -24,6 +24,9 @@ exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callb
         quantity: report.q,
         price: report.p,
       };
+      if (report.o === 'MARKET') { // Market order
+        trade.price = report.L;
+      }
       // To wait database save order before if it is market order
       setTimeout(callback.bind(null, exchange, leaderAddress, trade), 200);
     }
