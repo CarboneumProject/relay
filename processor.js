@@ -175,7 +175,7 @@ const onTrade = async function (exchange, leader, trade) {
       side: trade.side,
       quantity: trade.quantity,
       price: trade.price,
-      cost: trade.quantity * (await exchange.getPriceInUSD(asset)),
+      cost: (trade.quantity * (await exchange.getPriceInUSD(asset))).toFixed(4),
       orderTime: new Date(trade.time),
     };
     await TradeLog.insertLog(log);
