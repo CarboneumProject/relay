@@ -108,9 +108,9 @@ router.get('/performance', async (req, res, next) => {
         buyTrade[t.asset].push(t);
       } else { // Sell
         if (t.asset in buyTrade) {
-          let subAmountLeft = parseFloat(t.quantity);
-          let sellPrice = parseFloat(t.cost) / parseFloat(t.quantity);
           for (let b of buyTrade[t.asset]) {
+            let subAmountLeft = parseFloat(b.balance);
+            let sellPrice = parseFloat(t.cost) / parseFloat(t.quantity);
             let lastAmount = parseFloat(b.quantity);
             subAmountLeft = subAmountLeft / parseFloat(b.quantity);
             let profit;
@@ -142,7 +142,7 @@ router.get('/performance', async (req, res, next) => {
       'profit': profitAll.toFixed(2),
       'mean': mean(profitPercentAll).toFixed(2),
       'geometricMean': geometricMean(profitPercentAll).toFixed(2),
-      profits: profits,
+      'profits': profits,
     });
   } catch (e) {
     console.error(e);
