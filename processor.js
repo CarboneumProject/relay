@@ -171,7 +171,8 @@ const onTrade = async function (exchange, leader, trade) {
     let log = {
       txHash: utils.tradeTx(exchange.id, trade.id),
       trader: leader,
-      pair: trade.symbol,
+      asset: asset,
+      currency: base,
       side: trade.side,
       quantity: trade.quantity,
       price: trade.price,

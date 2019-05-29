@@ -5,16 +5,18 @@ tradeLog.insertLog = async function insertLog (log) {
   return mysql.query(`
       INSERT INTO carboneum.trade_log (tx_hash,
                                        trader,
-                                       pair,
+                                       asset,
+                                       currency,
                                        side,
                                        quantity,
                                        price,
                                        cost,
                                        order_time)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `, [log.txHash,
     log.trader,
-    log.pair,
+    log.asset,
+    log.currency,
     log.side,
     log.quantity,
     log.price,
