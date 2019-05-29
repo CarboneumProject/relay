@@ -25,4 +25,13 @@ tradeLog.insertLog = async function insertLog (log) {
   ]);
 };
 
+tradeLog.findLog = async function findLog (trader) {
+  return mysql.query(`
+      SELECT *
+      FROM carboneum.trade_log
+      WHERE trader = ?
+      ORDER BY order_time ASC
+  `, [trader]);
+};
+
 module.exports = tradeLog;
