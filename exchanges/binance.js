@@ -23,6 +23,7 @@ exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callb
         side: report.S,
         quantity: report.q,
         price: report.p,
+        time: report.E,
       };
       if (report.o === 'MARKET') { // Market order
         trade.price = report.L;

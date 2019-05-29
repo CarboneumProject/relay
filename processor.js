@@ -12,6 +12,7 @@ const push = require('./models/push');
 const utils = require('./models/utils');
 const crypt = require('./models/crypt');
 const Trade = require('./models/trade');
+const TradeLog = require('./models/tradeLog');
 const feeProcessor = require('./models/feeProcessor');
 const socialTrading = require('./models/socialTradingContract');
 
@@ -74,6 +75,7 @@ const onTrade = async function (exchange, leader, trade) {
         tradeComplete.amountTaker, tradeComplete.leader, tradeComplete.follower, msg);
     }
   } else {
+    let { asset, base, precision, stepSize, minNotional } = await exchange.getAssetsBySymbol(trade.symbol);
     // Trade from real user.
     client.hgetall('leader:' + leader, async function (err, followDict) {
       if (err) {
@@ -83,7 +85,6 @@ const onTrade = async function (exchange, leader, trade) {
         await Object.keys(followDict).forEach(async function (follower) {
           let user = await User.find(follower, exchange.name);
           if (user !== undefined) {
-            let { asset, base, precision, stepSize, minNotional } = await exchange.getAssetsBySymbol(trade.symbol);
             let leaderUser = await User.find(leader, exchange.name);
             let leaderBalance = await exchange.balance(
               crypt.decrypt(leaderUser.apiKey),
@@ -165,6 +166,19 @@ const onTrade = async function (exchange, leader, trade) {
         });
       }
     });
+
+    // Add trade log for performance measure
+    let log = {
+      txHash: utils.tradeTx(exchange.id, trade.id),
+      trader: leader,
+      pair: trade.symbol,
+      side: trade.side,
+      quantity: trade.quantity,
+      price: trade.price,
+      cost: trade.quantity * (await exchange.getPriceInUSD(asset)),
+      orderTime: new Date(trade.time),
+    };
+    await TradeLog.insertLog(log);
   }
 };
 

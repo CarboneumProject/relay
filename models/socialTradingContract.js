@@ -23,7 +23,7 @@ socialTrading.distributeRewardAll = async function (rewards) {
   );
   let gasPrice = await w3.eth.getGasPrice();
   for (let i = 0; i < rewards.length; i++) {
-    if (rewards[i].C8FEE === new BigNumber(0)) { // No fee to distribute
+    if (rewards[i].C8FEE.eq(new BigNumber(0))) { // No fee to distribute
       continue;
     }
     try {

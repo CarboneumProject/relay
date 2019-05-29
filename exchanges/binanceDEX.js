@@ -38,6 +38,7 @@ exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callb
             side: report.S,
             quantity: report.q,
             price: report.p,
+            time: report.T,
           };
           // To wait database save order before if it is market order
           setTimeout(callback.bind(null, exchange, leaderAddress, trade), 200);
