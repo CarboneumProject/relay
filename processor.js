@@ -169,7 +169,7 @@ const onTrade = async function (exchange, leader, trade) {
 
     // Add trade log for performance measure
     let log = {
-      txHash: utils.tradeTx(exchange.id, trade.id),
+      txHash: txHash,
       trader: leader,
       asset: asset,
       currency: base,
