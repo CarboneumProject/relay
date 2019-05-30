@@ -18,9 +18,11 @@ const socialTrading = require('./models/socialTradingContract');
 
 const onTrade = async function (exchange, leader, trade) {
   let txHash = utils.tradeTx(exchange.id, trade.id);
+  let trader = leader;
   let order = await Order.find(txHash);
   if (order !== undefined) {
     // Trade from this relay.
+    trader = order.follower;
     let { asset, base, precision } = await exchange.getAssetsBySymbol(trade.symbol);
     let assetPrice = await exchange.getPriceInUSD(asset);
     let costBase = (trade.price * trade.quantity).toFixed(precision);
@@ -170,7 +172,7 @@ const onTrade = async function (exchange, leader, trade) {
     // Add trade log for performance measure
     let log = {
       txHash: txHash,
-      trader: leader,
+      trader: trader,
       asset: asset,
       currency: base,
       side: trade.side,
