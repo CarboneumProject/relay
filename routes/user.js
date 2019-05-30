@@ -99,6 +99,8 @@ router.get('/performance', async (req, res, next) => {
     let profits = {};
     let profitAll = 0;
     let profitPercentAll = [];
+    let win = 0;
+    let lost = 0;
     for (let t of trades) {
       if (t.side === 'BUY') {
         if (!(t.asset in buyTrade)) {
@@ -125,6 +127,11 @@ router.get('/performance', async (req, res, next) => {
                 profit = (sellPrice - buyPrice) * (lastAmount + subAmountLeft);
                 profitPercentAll.push((profit / (buyPrice * lastAmount)) * 100);
               }
+              if (profit > 0) {
+                win += 1;
+              } else {
+                lost += 1;
+              }
               profitAll += profit;
               if (!(t.asset in profits)) {
                 profits[t.asset] = 0;
@@ -137,12 +144,19 @@ router.get('/performance', async (req, res, next) => {
         }
       }
     }
+    let winRate = 'N/A';
+    if (lost > 0) {
+      winRate = (win / lost).toFixed(2);
+    }
     const mean = arr => arr.reduce((p, c) => p + c, 0) / arr.length;
     return res.send({
       'profit': profitAll.toFixed(2),
       'mean': mean(profitPercentAll).toFixed(2),
       'geometricMean': geometricMean(profitPercentAll).toFixed(2),
       'profits': profits,
+      'win': win,
+      'lost': lost,
+      'winRate': winRate,
     });
   } catch (e) {
     console.error(e);
