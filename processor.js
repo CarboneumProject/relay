@@ -18,12 +18,12 @@ const socialTrading = require('./models/socialTradingContract');
 
 const onTrade = async function (exchange, leader, trade) {
   let txHash = utils.tradeTx(exchange.id, trade.id);
+  let { asset, base, precision, stepSize, minNotional } = await exchange.getAssetsBySymbol(trade.symbol);
   let trader = leader;
   let order = await Order.find(txHash);
   if (order !== undefined) {
     // Trade from this relay.
     trader = order.follower;
-    let { asset, base, precision } = await exchange.getAssetsBySymbol(trade.symbol);
     let assetPrice = await exchange.getPriceInUSD(asset);
     let costBase = (trade.price * trade.quantity).toFixed(precision);
     let costUsd = (assetPrice * trade.quantity).toFixed(precision);
@@ -77,7 +77,6 @@ const onTrade = async function (exchange, leader, trade) {
         tradeComplete.amountTaker, tradeComplete.leader, tradeComplete.follower, msg);
     }
   } else {
-    let { asset, base, precision, stepSize, minNotional } = await exchange.getAssetsBySymbol(trade.symbol);
     // Trade from real user.
     client.hgetall('leader:' + leader, async function (err, followDict) {
       if (err) {
@@ -168,21 +167,20 @@ const onTrade = async function (exchange, leader, trade) {
         });
       }
     });
-
-    // Add trade log for performance measure
-    let log = {
-      txHash: txHash,
-      trader: trader,
-      asset: asset,
-      currency: base,
-      side: trade.side,
-      quantity: trade.quantity,
-      price: trade.price,
-      cost: (trade.quantity * (await exchange.getPriceInUSD(asset))).toFixed(4),
-      orderTime: new Date(trade.time),
-    };
-    await TradeLog.insertLog(log);
   }
+  // Add trade log for performance measure
+  let log = {
+    txHash: txHash,
+    trader: trader,
+    asset: asset,
+    currency: base,
+    side: trade.side,
+    quantity: trade.quantity,
+    price: trade.price,
+    cost: (trade.quantity * (await exchange.getPriceInUSD(asset))).toFixed(4),
+    orderTime: new Date(trade.time),
+  };
+  await TradeLog.insertLog(log);
 };
 
 const exchanges = ['binance', 'binanceDEX'];
