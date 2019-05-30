@@ -25,11 +25,16 @@ tradeLog.insertLog = async function insertLog (log) {
   ]);
 };
 
-tradeLog.findLog = async function findLog (trader) {
+tradeLog.findLog = async function findLog (trader, days) {
+  let extraQuery = ` AND order_time BETWEEN NOW() - INTERVAL ${days} DAY AND NOW()`;
+  if (days === 0) { // All time
+    extraQuery = '';
+  }
   return mysql.query(`
       SELECT *
       FROM carboneum.trade_log
       WHERE trader = ?
+        ${extraQuery}
       ORDER BY order_time ASC
   `, [trader]);
 };

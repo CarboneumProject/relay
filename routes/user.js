@@ -77,12 +77,72 @@ router.get('/show', async (req, res, next) => {
   }
 });
 
-function geometricMean (data) {
-  let sum = data[0];
-  for (let i = 1; i < data.length; i++) {
-    sum *= data[i];
+async function getTradeRealized (address, days) {
+  const secInDay = 24 * 60 * 60;
+  let trades = await TradeLog.findLog(address, days);
+  let buyTrade = {};
+  let profits = {};
+  let profitAll = 0;
+  let costAll = 0;
+  let profitPercentAll = [];
+  let win = 0;
+  let lost = 0;
+  for (let t of trades) {
+    t.time = t.order_time.getTime() / 1000;
+    if (t.side === 'BUY') {
+      if (!(t.asset in buyTrade)) {
+        buyTrade[t.asset] = [];
+      }
+      t.balance = parseFloat(t.quantity);
+      buyTrade[t.asset].push(t);
+    } else { // Sell
+      if (t.asset in buyTrade) {
+        for (let b of buyTrade[t.asset]) {
+          let subAmountLeft = parseFloat(b.balance);
+          let sellPrice = parseFloat(t.cost) / parseFloat(t.quantity);
+          let lastAmount = parseFloat(b.quantity);
+          subAmountLeft = subAmountLeft / parseFloat(b.quantity);
+          let profit;
+          if (subAmountLeft > 0.0) {
+            let buyPrice = parseFloat(b.cost) / lastAmount;
+            let dayToTrade = (t.time - b.time) / secInDay;
+            if (dayToTrade < 1.0) {
+              dayToTrade = 1;
+            }
+            let profitPerDay = 0;
+            if (subAmountLeft > 0) {
+              b.balance = 0;
+              profit = (sellPrice - buyPrice) * lastAmount;
+            } else {
+              b.balance = Math.abs(subAmountLeft);
+              profit = (sellPrice - buyPrice) * (lastAmount + subAmountLeft);
+            }
+            costAll += buyPrice * lastAmount;
+            profitPerDay = (profit / (buyPrice * lastAmount)) / dayToTrade;
+            profitPercentAll.push(profitPerDay);
+            if (profit > 0) {
+              win += 1;
+            } else {
+              lost += 1;
+            }
+            profitAll += profit;
+            if (!(t.asset in profits)) {
+              profits[t.asset] = 0;
+            }
+            profits[t.asset] += profit;
+          }
+        }
+      } else {
+        // NO buy
+      }
+    }
   }
-  return Math.pow(sum, 1.0 / data.length);
+  let winRate = 'N/A';
+  if (lost > 0) {
+    winRate = (win / lost).toFixed(2);
+  }
+  let percentRealized = ((profitAll / costAll) * 100).toFixed(2);
+  return { percentRealized: percentRealized, winRate: winRate, win: win.toFixed(0), lost: lost.toFixed(0) };
 }
 
 router.get('/performance', async (req, res, next) => {
@@ -94,69 +154,22 @@ router.get('/performance', async (req, res, next) => {
       res.status(404);
       return res.send({ 'status': 'no', 'message': 'User not found' });
     }
-    let trades = await TradeLog.findLog(address);
-    let buyTrade = {};
-    let profits = {};
-    let profitAll = 0;
-    let profitPercentAll = [];
-    let win = 0;
-    let lost = 0;
-    for (let t of trades) {
-      if (t.side === 'BUY') {
-        if (!(t.asset in buyTrade)) {
-          buyTrade[t.asset] = [];
-        }
-        t.balance = parseFloat(t.quantity);
-        buyTrade[t.asset].push(t);
-      } else { // Sell
-        if (t.asset in buyTrade) {
-          for (let b of buyTrade[t.asset]) {
-            let subAmountLeft = parseFloat(b.balance);
-            let sellPrice = parseFloat(t.cost) / parseFloat(t.quantity);
-            let lastAmount = parseFloat(b.quantity);
-            subAmountLeft = subAmountLeft / parseFloat(b.quantity);
-            let profit;
-            if (subAmountLeft > 0.0) {
-              let buyPrice = parseFloat(b.cost) / lastAmount;
-              if (subAmountLeft > 0) {
-                b.balance = 0;
-                profit = (sellPrice - buyPrice) * lastAmount;
-                profitPercentAll.push((profit / (buyPrice * lastAmount)) * 100);
-              } else {
-                b.balance = Math.abs(subAmountLeft);
-                profit = (sellPrice - buyPrice) * (lastAmount + subAmountLeft);
-                profitPercentAll.push((profit / (buyPrice * lastAmount)) * 100);
-              }
-              if (profit > 0) {
-                win += 1;
-              } else {
-                lost += 1;
-              }
-              profitAll += profit;
-              if (!(t.asset in profits)) {
-                profits[t.asset] = 0;
-              }
-              profits[t.asset] += profit;
-            }
-          }
-        } else {
-          // NO buy
-        }
-      }
-    }
-    let winRate = 'N/A';
-    if (lost > 0) {
-      winRate = (win / lost).toFixed(2);
-    }
-    const mean = arr => arr.reduce((p, c) => p + c, 0) / arr.length;
+    let perf1d = await getTradeRealized(address, 1);
+    let perf7D = await getTradeRealized(address, 7);
+    let perf30D = await getTradeRealized(address, 30);
+    let perf90D = await getTradeRealized(address, 90);
+    let perfAll = await getTradeRealized(address, 0);
     return res.send({
-      'profit': profitAll.toFixed(2),
-      'mean': mean(profitPercentAll).toFixed(2),
-      'geometricMean': geometricMean(profitPercentAll).toFixed(2),
-      'profits': profits,
-      'win': win,
-      'lost': lost,
-      'winRate': winRate,
+      'performance': {
+        '1d': perf1d.percentRealized,
+        '7d': perf7D.percentRealized,
+        '30d': perf30D.percentRealized,
+        '90D': perf90D.percentRealized,
+        'all': perfAll.percentRealized,
+      },
+      'win': perfAll.win,
+      'lost': perfAll.lost,
+      'winRate': perfAll.winRate,
     });
   } catch (e) {
     console.error(e);
