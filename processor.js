@@ -15,15 +15,34 @@ const Trade = require('./models/trade');
 const TradeLog = require('./models/tradeLog');
 const feeProcessor = require('./models/feeProcessor');
 const socialTrading = require('./models/socialTradingContract');
+const processed = {};
+
+function isProcessed (tradeKey) {
+  if (tradeKey in processed) {
+    return true;
+  } else {
+    processed[tradeKey] = true;
+    return false;
+  }
+}
 
 const onTrade = async function (exchange, leader, trade) {
   let txHash = utils.tradeTx(exchange.id, trade.id);
   let { asset, base, precision, stepSize, minNotional } = await exchange.getAssetsBySymbol(trade.symbol);
   let trader = leader;
+  // Prevent same trade and same trader.
+  let tradeKey = `${exchange}:${trader}:${txHash}`;
+  if (isProcessed(tradeKey)) {
+    return;
+  }
   let order = await Order.find(txHash);
   if (order !== undefined) {
     // Trade from this relay.
     trader = order.follower;
+    let tradeKey = `${exchange}:${trader}:${txHash}`;
+    if (isProcessed(tradeKey)) {
+      return;
+    }
     let assetPrice = await exchange.getPriceInUSD(asset);
     let costBase = (trade.price * trade.quantity).toFixed(precision);
     let costUsd = (assetPrice * trade.quantity).toFixed(precision);
