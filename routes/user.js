@@ -164,7 +164,7 @@ router.get('/performance', async (req, res, next) => {
         '1d': perf1d.percentRealized,
         '7d': perf7D.percentRealized,
         '30d': perf30D.percentRealized,
-        '90D': perf90D.percentRealized,
+        '90d': perf90D.percentRealized,
         'all': perfAll.percentRealized,
       },
       'win': perfAll.win,
