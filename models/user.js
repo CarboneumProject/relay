@@ -14,7 +14,7 @@ const infuraProvider = network => providerWithMnemonic(
 const BENCHMARK_ALLOWANCE_C8 = new BigNumber(10 ** 18).mul(10000);
 const user = {};
 
-user.register = async function register (address, exchange, apiKey, apiSecret, userType, fullname, email, asset) {
+user.register = async function register (address, exchange, apiKey, apiSecret, userType, fullname, email, asset, passphrase) {
   return mysql.query(`
       REPLACE INTO carboneum.user (address,
                                    exchange,
@@ -23,10 +23,11 @@ user.register = async function register (address, exchange, apiKey, apiSecret, u
                                    type,
                                    fullname,
                                    email,
-                                   asset
+                                   asset,
+                                   passphrase
                                    )
-      VALUES (?, ?, ?, ?, ?, ?, ?,?)
-  `, [address, exchange, apiKey, apiSecret, userType, fullname, email, asset]);
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `, [address, exchange, apiKey, apiSecret, userType, fullname, email, asset, passphrase]);
 };
 
 user.find = async function find (address, exchange) {

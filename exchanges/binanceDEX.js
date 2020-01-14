@@ -19,7 +19,7 @@ if (!mainnet) {
   prefix = 'tbnb';
 }
 
-exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callback) {
+exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, passphrase, callback) {
   function connect () {
     const conn = new WebSocket(baseURLWS + apiKey);
     conn.onmessage = onEvent;

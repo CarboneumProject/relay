@@ -24,7 +24,7 @@ router.post('/register', async (req, res, next) => {
       return res.send({ 'status': 'no', 'message': 'Invalid user type.' });
     }
     const exchange = require(`../exchanges/${user.exchange}`);
-    let error = await exchange.validateKey(user.apiKey, user.apiSecret, user.type);
+    let error = await exchange.validateKey(user.apiKey, user.apiSecret, user.type, user.passphrase);
     if (error) {
       res.status(400);
       return res.send({ 'status': 'no', 'message': error });
@@ -38,6 +38,7 @@ router.post('/register', async (req, res, next) => {
       user.fullname,
       user.email,
       user.asset,
+      user.passphrase,
     );
     const re = res.send({ 'status': 'ok' });
     if (user.type === 'follower') {

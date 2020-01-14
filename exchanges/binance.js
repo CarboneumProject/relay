@@ -7,7 +7,7 @@ exchange.id = '0xb17a7ce00000000000000';
 exchange.name = 'binance';
 exchange.info = undefined;
 
-exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, callback) {
+exchange.subscribe = function subscribe (apiKey, apiSecret, leaderAddress, passphrase, callback) {
   let binance = new Binance();
   binance.options({
     APIKEY: apiKey,

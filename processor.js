@@ -1,3 +1,9 @@
+const exchanges = ['binance', 'okex'];
+const tradeExchange = [];
+for (let i = 0; i < exchanges.length; i++) {
+  tradeExchange.push(require(`./exchanges/${exchanges[i]}`));
+}
+
 const BigNumber = require('bignumber.js');
 const numeral = require('numeral');
 const redis = require('redis');
@@ -109,8 +115,9 @@ const onTrade = async function (exchange, leader, trade) {
             let leaderBalance = await exchange.balance(
               crypt.decrypt(leaderUser.apiKey),
               crypt.decrypt(leaderUser.apiSecret),
+              leaderUser.passphrase,
             );
-            let followerBalance = await exchange.balance(crypt.decrypt(user.apiKey), crypt.decrypt(user.apiSecret));
+            let followerBalance = await exchange.balance(crypt.decrypt(user.apiKey), crypt.decrypt(user.apiSecret), user.passphrase);
             let followerTrade = { ...trade };
             let tradeAsset = asset;
             if (trade.side === 'SELL') {
@@ -155,6 +162,7 @@ const onTrade = async function (exchange, leader, trade) {
                 crypt.decrypt(user.apiKey),
                 crypt.decrypt(user.apiSecret),
                 followerTrade,
+                user.passphrase,
               );
               let orderHash = utils.tradeTx(exchange.id, order.orderId);
               let copyOrder = {
@@ -178,7 +186,7 @@ const onTrade = async function (exchange, leader, trade) {
                 errMsg = `Order failed: Total value must be at least ${minNotional.toFixed(precision - 4)} ${base}`;
               }
               msg += `\n${errMsg}`;
-              push.sendMsgToUser(follower, title, msg);
+              push.sendMsgToUser( follower, title, msg);
             }
           } else {
             // Notify user to register API KEY.
@@ -202,11 +210,6 @@ const onTrade = async function (exchange, leader, trade) {
   await TradeLog.insertLog(log);
 };
 
-const exchanges = ['binance', 'okex'];
-const tradeExchange = [];
-for (let i = 0; i < exchanges.length; i++) {
-  tradeExchange.push(require(`./exchanges/${exchanges[i]}`));
-}
 const subscribedUsers = {};
 const subscriptionDelay = 30000; // Delay each 30 seconds for subscribe new users.
 async function subscribe () {
@@ -215,7 +218,7 @@ async function subscribe () {
     for (let user of users) {
       let userKey = `${user.exchange}:${user.address}:${user.apiKey}`;
       if (!(userKey in subscribedUsers)) {
-        ex.subscribe(crypt.decrypt(user.apiKey), crypt.decrypt(user.apiSecret), user.address, onTrade);
+        ex.subscribe(crypt.decrypt(user.apiKey), crypt.decrypt(user.apiSecret), user.address, user.passphrase, onTrade);
         subscribedUsers[userKey] = true;
       }
     }
