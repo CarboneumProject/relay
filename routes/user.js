@@ -70,6 +70,7 @@ router.get('/show', async (req, res, next) => {
     }
     delete userDetail.apiKey;
     delete userDetail.apiSecret;
+    delete userDetail.passphrase;
     res.send(userDetail);
   } catch (e) {
     console.error(e);
