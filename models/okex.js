@@ -71,7 +71,19 @@ okex.accountInformation = async function (apiKey, apiSecret, passphrase) {
     }).catch((err) => {
       console.log(err.response.status);
       console.log(err.response.data);
-      return [];
+      switch (err.response.data.code) {
+      case 30001:
+      case 30006:
+        throw new Error('API-key format invalid.');
+      case 30002:
+      case 30013:
+        throw new Error('Signature for this request is not valid.');
+      case 30004:
+      case 30015:
+        throw new Error('Invalid OK_ACCESS_PASSPHRASE');
+      default:
+        throw new Error(err.response.data.message);
+      }
     });
 };
 
