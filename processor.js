@@ -45,10 +45,7 @@ const onTrade = async function (exchange, leader, trade) {
   if (order !== undefined) {
     // Trade from this relay.
     trader = order.follower;
-    let tradeKey = `${exchange}:${trader}:${txHash}`;
-    if (isProcessed(tradeKey)) {
-      return;
-    }
+
     let assetPrice = await exchange.getPriceInUSD(asset);
     let costBase = (trade.price * trade.quantity).toFixed(precision);
     let costUsd = (assetPrice * trade.quantity).toFixed(precision);
