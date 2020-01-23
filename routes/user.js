@@ -184,7 +184,6 @@ router.get('/balance', async (req, res, next) => {
   try {
     const exchange = req.query.exchange;
     const address = req.query.address.toLowerCase();
-    const passphrase = req.query.passphrase;
     const signature = req.query.signature;
     const exchangeModel = require(`../exchanges/${exchange}`);
     let userDetail;
@@ -206,7 +205,7 @@ router.get('/balance', async (req, res, next) => {
     let balance = await exchangeModel.balance(
       crypt.decrypt(userDetail.apiKey),
       crypt.decrypt(userDetail.apiSecret),
-      passphrase,
+      userDetail.passphrase,
     );
     if (typeof balance === 'string') {
       res.status(403);
