@@ -181,6 +181,8 @@ const onTrade = async function (exchange, leader, trade) {
               }
               if (errMsg === 'Filter failure: MIN_NOTIONAL') {
                 errMsg = `Order failed: Total value must be at least ${minNotional.toFixed(precision - 4)} ${base}`;
+              } else if (errMsg === 'The transaction amount is less than the minimum transaction value') {
+                errMsg = `Order failed: Total value must be at least ${minNotional.toFixed(precision - 4)} ${base}`;
               }
               msg += `\n${errMsg}`;
               push.sendMsgToUser( follower, title, msg);
