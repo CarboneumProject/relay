@@ -97,10 +97,18 @@ exchange.newOrder = async function newOrder (apiKey, apiSecret, order, passphras
   };
 
   let orderSent = await okex.placeOrder(params, apiKey, apiSecret, passphrase);
-  return {
-    orderId: orderSent.order_id,
-    transactTime: new Date(),
-  };
+  if (orderSent) {
+    if (orderSent.result === true) {
+      return {
+        orderId: orderSent.order_id,
+        transactTime: new Date(),
+      };
+    } else {
+      throw new Error(orderSent.error_message);
+    }
+  } else {
+    throw new Error('unknown error');
+  }
 };
 
 exchange.getPriceInUSD = async function getPriceInUSD (asset) {
