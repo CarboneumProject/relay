@@ -1,6 +1,7 @@
 const okex = {};
 const CryptoJS = require('crypto-js');
 const axios = require('axios');
+const httpAdapter = require('axios/lib/adapters/http');
 let apiURL = 'https://www.okex.com';
 
 okex.getServerTime = function (type = 'iso') {
@@ -8,6 +9,7 @@ okex.getServerTime = function (type = 'iso') {
     method: 'get',
     url: apiURL + '/api/general/v3/time',
     headers: {},
+    adapter: httpAdapter,
   })
     .then(function (response) {
       return response.data[type];
@@ -21,6 +23,7 @@ okex.instruments = function () {
     method: 'get',
     url: apiURL + '/api/spot/v3/instruments',
     headers: {},
+    adapter: httpAdapter,
   })
     .then(function (response) {
       return response.data;
@@ -34,6 +37,7 @@ okex.tradingPair = function (pair) {
     method: 'get',
     url: apiURL + `/api/spot/v3/instruments/${pair}/ticker`,
     headers: {},
+    adapter: httpAdapter,
   })
     .then(function (response) {
       return response.data;
@@ -65,6 +69,7 @@ okex.accountInformation = async function (apiKey, apiSecret, passphrase) {
       'OK-ACCESS-PASSPHRASE': passphrase,
     },
     data: JSON.parse(body),
+    adapter: httpAdapter,
   })
     .then(function (response) {
       return response.data;
@@ -105,6 +110,7 @@ okex.getCurrency = async function (apiKey, apiSecret, passphrase) {
       'OK-ACCESS-PASSPHRASE': passphrase,
     },
     data: JSON.parse(body),
+    adapter: httpAdapter,
   })
     .then(function (response) {
       return response.data;
@@ -133,6 +139,7 @@ okex.placeOrder = async function (params, apiKey, apiSecret, passphrase) {
       'OK-ACCESS-PASSPHRASE': passphrase,
     },
     data: JSON.parse(body),
+    adapter: httpAdapter,
   })
     .then(function (response) {
       return response.data;
@@ -161,6 +168,7 @@ okex.cancelOrder = async function (params, apiKey, apiSecret, passphrase) {
       'OK-ACCESS-PASSPHRASE': passphrase,
     },
     data: JSON.parse(body),
+    adapter: httpAdapter,
   })
     .then(function (response) {
       return response.data;

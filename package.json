@@ -25,7 +25,7 @@
     "@babel/runtime": "^7.3.1",
     "@binance-chain/javascript-sdk": "^2.10.0",
     "abi-decoder": "^1.2.0",
-    "axios": "^0.18.0",
+    "axios": "^0.19.2",
     "babel-polyfill": "^6.24.1",
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.24.1",
