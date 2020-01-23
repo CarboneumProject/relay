@@ -79,9 +79,9 @@ router.get('/show', async (req, res, next) => {
   }
 });
 
-async function getTradeRealized (address, days) {
+async function getTradeRealized (address, exchange, days) {
   const secInDay = 24 * 60 * 60;
-  let trades = await TradeLog.findLog(address, days);
+  let trades = await TradeLog.findLog(address, exchange, days);
   let buyTrade = {};
   let profits = {};
   let profitAll = 0;
@@ -156,11 +156,11 @@ router.get('/performance', async (req, res, next) => {
       res.status(404);
       return res.send({ 'status': 'no', 'message': 'User not found' });
     }
-    let perf1d = await getTradeRealized(address, 1);
-    let perf7D = await getTradeRealized(address, 7);
-    let perf30D = await getTradeRealized(address, 30);
-    let perf90D = await getTradeRealized(address, 90);
-    let perfAll = await getTradeRealized(address, 0);
+    let perf1d = await getTradeRealized(address, exchange, 1);
+    let perf7D = await getTradeRealized(address, exchange, 7);
+    let perf30D = await getTradeRealized(address, exchange, 30);
+    let perf90D = await getTradeRealized(address, exchange, 90);
+    let perfAll = await getTradeRealized(address, exchange, 0);
     return res.send({
       'performance': {
         '1d': perf1d.percentRealized,

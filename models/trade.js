@@ -1,7 +1,7 @@
 const mysql = require('./mysql');
 const trade = {};
 
-trade.getAvailableTrade = async function getAvailableTrade (token, owner) {
+trade.getAvailableTrade = async function getAvailableTrade (token, owner, exchange) {
   return mysql.query(`
     SELECT id,
         order_time AS orderTime,
@@ -17,9 +17,9 @@ trade.getAvailableTrade = async function getAvailableTrade (token, owner) {
         leader_tx_hash AS leaderTxHash,
         cost
     FROM carboneum.trade
-    WHERE  maker_token = ? AND follower = ? AND amount_left != '0'
+    WHERE  maker_token = ? AND follower = ? AND amount_left != '0' AND exchange = ?
     ORDER BY order_time ASC
-  `, [token, owner]);
+  `, [token, owner, exchange]);
 };
 
 trade.updateAmountLeft = async function updateAmountLeft (amountLeft, id) {
@@ -41,8 +41,9 @@ trade.insertNewTrade = async function insertNewTrade (trade) {
                                  order_hash,
                                  tx_hash,
                                  leader_tx_hash,
-                                 cost)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                 cost,
+                                 exchange)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `, [trade.orderTime,
     trade.leader,
     trade.follower,
@@ -55,6 +56,7 @@ trade.insertNewTrade = async function insertNewTrade (trade) {
     trade.txHash,
     trade.leaderTxHash,
     trade.cost,
+    trade.exchange,
   ]);
 };
 

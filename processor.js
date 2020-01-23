@@ -62,13 +62,14 @@ const onTrade = async function (exchange, leader, trade) {
       txHash: order.orderHash,
       leaderTxHash: order.leaderTxHash,
       cost: costUsd,
+      exchange: exchange.name,
     };
     if (trade.side === 'BUY') {
       // Save buy order to database and wait for sell order.
       await Trade.insertNewTrade(tradeComplete);
     } else {
       // Sell order process fee.
-      let openTrades = await Trade.getAvailableTrade(asset, order.follower);
+      let openTrades = await Trade.getAvailableTrade(asset, order.follower, exchange.name);
       let c8LastPrice = await exchange.getC8LastPrice();
       c8LastPrice = new BigNumber(c8LastPrice);
       let rewardAndFees = await feeProcessor.percentageFee(openTrades, tradeComplete, c8LastPrice);
@@ -205,6 +206,7 @@ const onTrade = async function (exchange, leader, trade) {
     price: trade.price,
     cost: (trade.quantity * (await exchange.getPriceInUSD(asset))).toFixed(4),
     orderTime: new Date(trade.time),
+    exchange: exchange.name,
   };
   await TradeLog.insertLog(log);
 };

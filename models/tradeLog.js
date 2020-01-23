@@ -11,8 +11,9 @@ tradeLog.insertLog = async function insertLog (log) {
                                        quantity,
                                        price,
                                        cost,
-                                       order_time)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                       order_time,
+                                       exchange)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `, [log.txHash,
     log.trader,
     log.asset,
@@ -22,10 +23,11 @@ tradeLog.insertLog = async function insertLog (log) {
     log.price,
     log.cost,
     log.orderTime,
+    log.exchange,
   ]);
 };
 
-tradeLog.findLog = async function findLog (trader, days) {
+tradeLog.findLog = async function findLog (trader, exchange, days) {
   let extraQuery = ` AND order_time BETWEEN NOW() - INTERVAL ${days} DAY AND NOW()`;
   if (days === 0) { // All time
     extraQuery = '';
@@ -33,10 +35,10 @@ tradeLog.findLog = async function findLog (trader, days) {
   return mysql.query(`
       SELECT *
       FROM carboneum.trade_log
-      WHERE trader = ?
+      WHERE trader = ? AND exchange = ?
         ${extraQuery}
       ORDER BY order_time ASC
-  `, [trader]);
+  `, [trader, exchange]);
 };
 
 module.exports = tradeLog;
