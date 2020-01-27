@@ -17,7 +17,13 @@ async function connect (apiKey, apiSecret, leaderAddress, passphrase, callback) 
 
   ws.onopen = function () {
     ws.send(`{"op":"login","args":["${apiKey}","${passphrase}","${timestamp}","${signed}"]}`, (x) => {
-      setTimeout(() => ws.send('{"op": "subscribe", "args": ["spot/order:*"]}'), 80);
+      setTimeout(() => {
+        try {
+          ws.send('{"op": "subscribe", "args": ["spot/order:*"]}');
+        } catch (e) {
+
+        }
+      }, 100);
     });
   };
 
