@@ -212,15 +212,34 @@ const onTrade = async function (exchange, leader, trade) {
 };
 
 const subscribedUsers = {};
+const invalidUsers = {};
 const subscriptionDelay = 30000; // Delay each 30 seconds for subscribe new users.
 async function subscribe () {
   for (let ex of tradeExchange) {
     let users = await User.findAllInExchange(ex.name);
     for (let user of users) {
       let userKey = `${user.exchange}:${user.address}:${user.apiKey}`;
-      if (!(userKey in subscribedUsers)) {
-        ex.subscribe(crypt.decrypt(user.apiKey), crypt.decrypt(user.apiSecret), user.address, user.passphrase, onTrade);
-        subscribedUsers[userKey] = true;
+      if (!(userKey in invalidUsers)) {
+        if (!(userKey in subscribedUsers)) {
+          let error = await ex.validateKey(
+            crypt.decrypt(user.apiKey),
+            crypt.decrypt(user.apiSecret),
+            user.type,
+            user.passphrase
+          );
+          if (error) {
+            invalidUsers[userKey] = true;
+          } else {
+            ex.subscribe(
+              crypt.decrypt(user.apiKey),
+              crypt.decrypt(user.apiSecret),
+              user.address,
+              user.passphrase,
+              onTrade
+            );
+          }
+          subscribedUsers[userKey] = true;
+        }
       }
     }
   }
