@@ -233,7 +233,7 @@ async function subscribe () {
             ex.subscribe(
               crypt.decrypt(user.apiKey),
               crypt.decrypt(user.apiSecret),
-              user.address,
+              (user.address).toLowerCase(),
               user.passphrase,
               onTrade
             );
